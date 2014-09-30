@@ -88,10 +88,10 @@ elite.network     <- function(rel.all = rel.all, sigma = 14){
       ret.mem.2         <- which(ret.rel.2 > 0)
       ret.mem           <- intersect(ret.mem.1, ret.mem.2)
       
-      ret.vægt.1        <- org.weight[ret.org.1]
-      ret.vægt.2        <- org.weight[ret.org.2]
+      ret.vaegt.1        <- org.weight[ret.org.1]
+      ret.vaegt.2        <- org.weight[ret.org.2]
       
-      adj.all[ret.mem, ret.mem] <- adj.all[ret.mem, ret.mem] - ret.vægt.2
+      adj.all[ret.mem, ret.mem] <- adj.all[ret.mem, ret.mem] - ret.vaegt.2
     }
   }
   
@@ -514,20 +514,20 @@ beskrivelser <- function(x, rel.all = rel.all){
 #' 
 #' Find specifik search terms in all descriptions
 #' @param rel a affiliation edgelist
-#' @param søgeord a character vector of search terms
+#' @param soegeord a character vector of search terms
 #' @param ignore.case if TRUE the search is not case sensitive
 #' @param ... further arguments are passed on to \link{grep}.
 #' @return a affiliation edgelist
 #' @export
 
-find.beskrivelse <- function(rel, søgeord, ignore.case=TRUE, ...){
+find.beskrivelse <- function(rel, soegeord, ignore.case=TRUE, ...){
   
   beskrivelse <- as.character(rel$DESCRIPTION)
   if(ignore.case==TRUE) beskrivelse <- tolower(beskrivelse)
   
-  grep.søg  <- paste(søgeord, collapse="|")
-  grep.fund <- grep(grep.søg, beskrivelse, ignore.case=ignore.case, ...)  
-  # grep.fund <- grep(grep.søg, beskrivelse, ignore.case=ignore.case)  
+  grep.soeg  <- paste(soegeord, collapse="|")
+  grep.fund <- grep(grep.soeg, beskrivelse, ignore.case=ignore.case, ...)  
+  # grep.fund <- grep(grep.soeg, beskrivelse, ignore.case=ignore.case)  
   navne.fund <- levels(as.factor(rel$NAME[grep.fund]))
   navne.ind  <- which(rel$NAME %in% navne.fund)
   
@@ -554,14 +554,14 @@ find.gender <- function(navne, names.gender=names.gender){
   
   ng <- names.gender[names.gender$Navn %in% fornavne,]
   
-  køn   <- vector(length=length(navne))
+  koen   <- vector(length=length(navne))
   for (i in 1:length(navne)){
     n <- fornavne[i]
-    køn.navn <- as.numeric(ng[match(n, ng$Navn),][5])
-    køn[i]     <- køn.navn
+    koen.navn <- as.numeric(ng[match(n, ng$Navn),][5])
+    koen[i]     <- koen.navn
   }
   b <- c(0, 0.2, 0.8, 1)
-  kategori <- cut(køn, b, include.lowest=TRUE, labels=c("Women", "Binominal", "Men"))
+  kategori <- cut(koen, b, include.lowest=TRUE, labels=c("Women", "Binominal", "Men"))
   return(kategori)
 }
 

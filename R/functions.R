@@ -214,15 +214,10 @@ inddel.postnummer <- function(postnummer, postnumre.mat, del="Region"){
   # Bemærk at hvis der er overlap så tager funktionen den seneste. Dvs. at fx. ballerup bliver spist af herlev.
 }
 
-##### Has tags
-
-has.tags       <- function(x, tags){
-  org.navn     <- as.character(x$AFFILIATION)
-  sectors      <- data.frame(x$TAG1, x$TAG2, x$TAG3, x$TAG4, x$TAG5, x$TAG6, x$TAG7) 
-  sector.match <- sapply(sectors, "%in%", tags)
-  unique(org.navn[which(rowSums(sector.match) >= 1)])
-}
-
+#' Tag relation
+#' 
+#' Finds relations for each affiliation
+#' @param rel.all
 tag.relations            <- function(rel.all, org.names, by.individual = FALSE){
   rel.select             <- rel.all[rel.all$AFFILIATION %in% org.names,]
   if(by.individual == TRUE){

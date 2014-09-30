@@ -3,12 +3,12 @@
 \alias{find.beskrivelse}
 \title{Search descriptions}
 \usage{
-find.beskrivelse(rel, søgeord, ignore.case = TRUE, ...)
+find.beskrivelse(rel, soegeord, ignore.case = TRUE, ...)
 }
 \arguments{
 \item{rel}{a affiliation edgelist}
 
-\item{søgeord}{a character vector of search terms}
+\item{soegeord}{a character vector of search terms}
 
 \item{ignore.case}{if TRUE the search is not case sensitive}
 
