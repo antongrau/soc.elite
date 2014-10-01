@@ -97,7 +97,7 @@ graph.plot  <- function(graph, layout = layout.fruchterman.reingold(graph, weigh
     edge.text.aes$label        <- edge.text
   }
   
-  text.l                  <- list(size=text.size, color=text.colour, alpha=text.alpha, vjust=text.vjust, lineheight=1)
+  text.l                  <- list(size=text.size, color=text.color, alpha=text.alpha, vjust=text.vjust, lineheight=1)
   t.i                     <- unlist(lapply(text.l, length)) == 1
   text.attributes         <- text.l[t.i]
   text.aes                <- text.l[t.i==FALSE]
