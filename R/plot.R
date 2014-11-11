@@ -237,10 +237,7 @@ line.plot <- function(x, sort = TRUE, var.names = colnames(x), label.x = NULL, l
   if (identical(sort, TRUE)) x <- as.data.frame(apply(x, 2, sort, decreasing = FALSE))
   
   x$rank   <- seq(from = nrow(x), to = 1)  
-  
-  library(reshape)
-  
-  mx      <- melt(x, id.vars="rank")
+  mx      <- melt(x, id.vars = "rank")
   
   p       <- ggplot(mx, aes(x = rank, y = value, group = variable, color = variable)) + geom_line(aes(linetype = variable))
   p       <- p + theme_bw() + scale_color_manual(values = c("darkblue", "purple", "darkorange", "darkgreen", "grey50", "darkred"))
