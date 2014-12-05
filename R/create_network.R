@@ -112,6 +112,7 @@ tag.network         <- function(rel.tag, plot = TRUE, link.col = "ORG_NAVN"){
   colnames(tag.edges) <- c("ORG_NAVN", "TAG")
   exclude             <- which(is.na(tag.edges$TAG) | tag.edges$TAG == "" | tag.edges$TAG == " ")
   if(length(exclude) > 0) tag.edges <- tag.edges[-exclude,]
+  tag.edges           <- droplevels(tag.edges)
   tabnet              <- table(tag.edges)
   tabnet              <- as.matrix(tabnet)
   adj                 <- t(tabnet)%*%tabnet
@@ -137,7 +138,7 @@ tag.network         <- function(rel.tag, plot = TRUE, link.col = "ORG_NAVN"){
 #' @export
 
 adj.ind <- function(rel){
-  netmat <- data.frame(rel$NAME, rel$AFFILIATION)
+  netmat <- droplevels(data.frame(rel$NAME, rel$AFFILIATION))
   colnames(netmat) <- c("navn", "org")
   
   ### Nu laves netværksobjekterne
@@ -157,7 +158,7 @@ adj.ind <- function(rel){
 
 
 adj.org <- function(rel){
-  netmat <- data.frame(rel$NAME, rel$AFFILIATION)
+  netmat <- droplevels(data.frame(rel$NAME, rel$AFFILIATION))
   colnames(netmat) <- c("navn", "org")
   
   ### Nu laves netværksobjekterne
