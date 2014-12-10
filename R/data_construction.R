@@ -80,5 +80,16 @@ NULL
 #                           "Totally.nested.in.less.than.12", "Nested.in.more.than.12", 
 #                           "MATCH")
 # 
-# save(nested, file = "~/soc.elite/R/sysdata.rda")
 # 
+# ###############################################################################
+# # # Names.gender
+# load("~/My Dropbox/R/Elite/Navne/names_gender")
+# 
+# ###############################################################################
+# # # Postnumre
+# postnumre <- read.csv("~/My Dropbox/R/Elite/Data/postnumre.csv", sep = ";", fileEncoding = "UTF-8")
+# 
+# # 
+# # 
+# save(nested, names.gender, postnumre, file = "~/soc.elite/R/sysdata.rda")
+# # 

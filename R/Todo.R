@@ -1,8 +1,6 @@
 # Lav et script der gemmer navne datasættet
 # Dokumenter de sidste funktioner
-# Skift navn til soc.elite
 # Lav et eksempel på udtræk for individer, organisationer og for tags
-
 # Gem resultater
 
 #########################################################################

@@ -25,7 +25,17 @@ report.two.mode <- function(name, n = Inf){
 graph.plot.twomode(net.two, text = TRUE, vertex.fill = type) + scale_fill_manual(values = c("black", "slateblue", "white"))
 }
 
-#
+#' Twomode graphs
+#' 
+#' @param graph
+#' @param layout
+#' @param vertex.fill
+#' @param vertex.size
+#' @param edge.color
+#' @param edge.alpha
+#' @param ...
+#' @return a ggplot2 plot
+#' @export
 
 
 graph.plot.twomode <- function(graph, layout = "default",
@@ -51,9 +61,7 @@ graph.plot.twomode <- function(graph, layout = "default",
     edge.alpha              <- edge.betweenness(graph)
     scale.adjustments$alpha <- scale_alpha_continuous(range = c(0.3, 1))
   }
-  
-  
-  
+    
   if (identical(vertex.size, "degree")){
   vertex.size <- vector(length=vcount(graph))
   vertex.size[V(graph)$type == FALSE] <- degree(bipartite.projection(graph)$proj1)

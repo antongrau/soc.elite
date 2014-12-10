@@ -3,7 +3,7 @@
 \alias{find.gender}
 \title{Find the gender by name}
 \usage{
-find.gender(navne, names.gender = names.gender)
+find.gender(navne)
 }
 \arguments{
 \item{navne}{a character vector of full names}

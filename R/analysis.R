@@ -544,7 +544,8 @@ find.beskrivelse <- function(rel, soegeord, ignore.case=TRUE, ...){
 #' @return a factor with a gender guess
 #' @export
 
-find.gender <- function(navne, names.gender=names.gender){
+find.gender <- function(navne){
+  names.gender <- soc.elite:::names.gender
   n.list <- strsplit(navne, " ")
   fornavne <- vector(length=length(navne))
   for (i in 1:length(fornavne)){
