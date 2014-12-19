@@ -10,5 +10,7 @@ Depends:
     R (>= 3.0.0),
     Matrix,
     ggplot2,
-    igraph
+    igraph,
+    plyr,
+    reshape2
 License: GPL-3

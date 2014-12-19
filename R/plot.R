@@ -2,30 +2,39 @@
 #' 
 #' @param graph a \link{igraph} network object
 #' @param layout a two-column numerical matrix with coordinates for each vertex of graph
-#' @param vertex.color
-#' @param vertex.fill
-#' @param vertex.shape
-#' @param vertex.size
-#' @param vertex.alpha
-#' @param edges
-#' @param edge.color
-#' @param edge.alpha
-#' @param edge.size
-#' @param edge.line
-#' @param edge.order
-#' @param text
-#' @param text.size
-#' @param text.color
-#' @param text.alpha
-#' @param legend
-#' @param text.vjust
-#' @param midpoints
-#' @param midpoint.arrow
-#' @param edge.text
-#' @param edge.text.size
-#' @param edge.text.alpha
+#' @param vertex.color a single value or a vector of the same length and order as the vertices in graph. See \link{colors} for valid single values.
+#' @param vertex.fill a single value or a vector of the same length and order as the vertices in graph. See \link{colors} for valid single values.
+#' @param vertex.shape a single value or a vector of the same length and order as the vertices in graph.
+#' @param vertex.size a single value or a vector of the same length and order as the vertices in graph.
+#' @param vertex.alpha a single value between 0 and 1 or a vector of the same length and order as the vertices in graph. 
+#' @param edges if TRUE edges are drawn.
+#' @param edge.color a single value or a vector of the same length and order as the edges in graph. See \link{colors} for valid single values.
+#' @param edge.alpha a single value between 0 and 1 or a vector of the same length and order as the edges in graph. 
+#' @param edge.size a single value or a vector of the same length and order as the edges in graph.
+#' @param edge.line a single value or a vector of the same length and order as the edges in graph. 
+#' @param edge.order a vector of the same length and order as the edges in graph. Edges are drawn in increasing order, with the highest overlapping those at a lower order.#' @param text
+#' @param text.size if TRUE vertex names are drawn.
+#' @param text.color a single value or a vector of the same length and order as the vertices in graph. See \link{colors} for valid single values.
+#' @param text.alpha a single value or a vector of the same length and order as the vertices in graph.
+#' @param legend sets the position of the legend. "side" places the legend on the right hand side and "bottom" places the legend along the bottom of the plot.
+#' @param text.vjust a number setting the amount of vertical adjustment of the position of the text
+#' @param midpoints if TRUE edges have a arrow at their middle showing the direction of the edge. This naturally only applies to directed networks.
+#' @param midpoint.arrow sets the character of the midpoint arrow, see \link{arrow}
+#' @param edge.text if not FALSE, then a vector with the labels for each edge.
+#' @param edge.text.size a single value or a vector of the same length and order as the edges in graph.
+#' @param edge.text.alpha a single value or a vector of the same length and order as the edges in graph.
+#' @return a \link{ggplot2} plot
 #' @export
-
+#' @examples
+#' data(den)
+#' health.affil  <- has.tags(den, c("Health"))
+#' den.health    <- den[den$AFFILIATION %in% health.affil,]
+#' net.org       <- elite.network.org(den.health)
+#' lay.org       <- layout.fruchterman.reingold(net.org)
+#' p             <- graph.plot(net.org, layout = lay.org, vertex.size = V(net.org)$members, vertex.fill = degree(net.org),
+#'                             edge.color = "darkmagenta", edge.alpha = log(1/E(net.org)$weight))
+#' p             <- p + scale_fill_continuous(low = "white", high = "magenta") + scale_size_continuous(range = c(3, 10))
+#' p + scale_alpha_continuous(range = c(0,1))
 
 graph.plot  <- function(graph, layout = layout.fruchterman.reingold(graph, weight = E(graph)$weight^2),
                         vertex.color = "black", vertex.fill = "grey60", vertex.shape = 21, vertex.size = 3, vertex.alpha = 1,
@@ -70,7 +79,7 @@ graph.plot  <- function(graph, layout = layout.fruchterman.reingold(graph, weigh
     midpoint.aes$y              <- (edge.coords$start.y + edge.coords$slut.y) / 2
     
     
-    # Her finder bevæger vi os 1/l hen af vectoren imod slutpunktet. x1 kan så være midpunktet.
+    # Her bevæger vi os 1/l hen af vectoren imod slutpunktet. x1 kan så være midpunktet.
     # l = sqrt((x2 - x1)^2 + (y2 -y1)^2)
     # x3 = x1 + (1/l) * (x2 - x1)
     # y3 = y1 + (1/l) * (y2 - y1)
@@ -78,9 +87,6 @@ graph.plot  <- function(graph, layout = layout.fruchterman.reingold(graph, weigh
     L                            <- sqrt(((edge.coords$slut.x - midpoint.aes$x)^2) + ((edge.coords$slut.y - midpoint.aes$y)^2))
     midpoint.aes$xend            <- midpoint.aes$x + (1/L) * (edge.coords$slut.x - midpoint.aes$x)
     midpoint.aes$yend            <- midpoint.aes$y + (1/L) * (edge.coords$slut.y - midpoint.aes$y)
-    #midpoint.aes$xend           <- midpoint.aes$x + ((ax / ay) * crazy)
-    #midpoint.aes$yend           <- midpoint.aes$y + crazy
-    #    midpoint.aes$yend[els]      <- midpoint.aes$y[els] - crazy
     midpoint.aes$group           <- paste(midpoint.aes$x, midpoint.aes$y)
     
   }
@@ -149,9 +155,6 @@ graph.plot  <- function(graph, layout = layout.fruchterman.reingold(graph, weigh
             panel.background=element_blank(),panel.border=element_blank(),panel.grid.major=element_blank(),
             panel.grid.minor=element_blank(),plot.background=element_blank())  
 }
-
-
-
 
 #####################################################
 ### distribution plots
@@ -223,7 +226,7 @@ dist.plot <- function(x, decreasing = TRUE, sort = TRUE, navn = substitute(x), m
 
 #' Line plots
 #' 
-#' Produces several line plots
+#' Produces a plot with several lines
 #' @param x is a vector or a dataframe of vectors
 #' @param sort if TRUE values are sorted from highest to lowest
 #' @param var.names a character vector with the variable names
@@ -231,6 +234,14 @@ dist.plot <- function(x, decreasing = TRUE, sort = TRUE, navn = substitute(x), m
 #' @param label.y the label for the y axis
 #' @return a ggplot2 lineplot
 #' @export
+#' @examples
+#' data(den)
+#' health.affil  <- has.tags(den, c("Health"))
+#' den.health    <- den[den$AFFILIATION %in% health.affil,]
+#' net.health    <- elite.network(den.health)
+#' measures      <- data.frame(degree = degree(net.health, normalized = TRUE), betweenness = betweenness(net.health, normalized = TRUE))
+#' line.plot(measures)
+
 
 line.plot <- function(x, sort = TRUE, var.names = colnames(x), label.x = NULL, label.y = NULL){
   
@@ -307,3 +318,33 @@ vertex.coord <- function(graph, layout=layout.fruchterman.reingold(graph)){
   colnames(layout)  <- c("x", "y")
   layout
 }
+
+#' Tile.plot
+#' Plots a matrix as tile with color according to intensity
+#' @param adj.mat is the input matrix, with named rows and columns and numerical cells
+#' @return a ggplot2 tile plot
+#' @export
+
+tile.plot <- function(adj.mat, max.color.value = median(adj.mat)*2){
+  mti                <- melt(adj.mat, as.is = TRUE) 
+  colnames(mti)      <- c("rows", "cols", "value")
+  mti$name           <- factor(mti$rows, levels = rownames(adj.mat), ordered = TRUE )
+  mti$rows           <- factor(mti$rows, levels = rownames(adj.mat), ordered = TRUE )
+  mti$cols           <- factor(mti$cols, levels = colnames(adj.mat), ordered = TRUE )
+  mti$color          <- mti$value
+  mti$color[mti$color == 0] <- NA
+  mti$color[mti$color > max.color.value]  <- max.color.value
+  
+  sc                 <- list()
+  sc$theme_bw        <- theme_bw()
+  sc$fill            <- scale_fill_continuous(high = "#b2182b", low = "#fddbc7", na.value = "white", guide = "none")
+  sc$axis.angle      <- theme(axis.text.x = element_text(size = 11, angle = 90, hjust = 1, color = "black"), axis.text.y = element_text(size = 11, color = "black"))
+  sc$xlab            <- xlab(NULL)
+  sc$ylab            <- ylab(NULL)
+  sc$theme           <- theme(axis.ticks = element_blank(), panel.border = element_blank())
+  
+  p                  <- ggplot(data = mti, aes(x = rows, y = cols, fill = color, label = value)) + geom_tile(color = "black") + geom_text(alpha = 1)
+  p                  <- p + sc
+  p
+}
+

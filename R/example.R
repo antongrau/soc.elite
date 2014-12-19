@@ -17,7 +17,7 @@
 # lay.org      <- layout.fruchterman.reingold(net.org)
 # lay          <- layout.fruchterman.reingold(net)
 # 
-# graph.plot(net, lay)
+# graph.plot(net, layout = lay)
 # as.matrix(sort(degree(net)))
 # 
 # graph.plot(net.org, lay.org)
@@ -46,6 +46,7 @@
 # 
 # # Ak men de prikker der er jo meget meget små!
 # p          <- graph.plot(net.org, layout = lay.org, vertex.size = stor.org)
+# p + scale_size_continuous(range = c(0.1, 20))
 # p + scale_size_continuous(range = c(0.1, 20))
 # p + scale_size_continuous(range = c(3, 10))
 # 
@@ -91,14 +92,14 @@
 # 
 # p         <- graph.plot(net.org, layout = lay.org, vertex.size = stor.org, vertex.fill = degree.org, edge.alpha = eb, edge.color = "magenta")
 # p         <- p + scale_size_continuous(range = c(3, 10)) + scale_fill_continuous(low = "whitesmoke", high = "magenta")
-# p
+# p + scale_alpha_continuous(range = c(0,1))
 # 
 # 
 # 
 # ########################
 # # Tekst
 # 
-# p         <- graph.plot(net.org, layout = lay.org, vertex.size = stor.org, vertex.fill = degree.org, edge.alpha = eb, edge.color = "magenta", text = T)
+# p         <- graph.plot(net.org, layout = lay.org, vertex.size = stor.org, vertex.fill = degree.org, edge.alpha = eb, edge.color = "magenta", text = TRUE)
 # p         <- p + scale_size_continuous(range = c(3, 10)) + scale_fill_continuous(low = "whitesmoke", high = "magenta")
 # p
 # 
@@ -150,7 +151,7 @@
 # p          <- graph.plot(net, layout = lay, vertex.fill = fc, vertex.size = degree(net), edge.alpha = 1/E(net)$weight, edge.color = 1/E(net)$weight) 
 # p + skala
 # 
-# lay        <- layout.fruchterman.reingold(net, weights = E(net)$weight, niter = 500, coolexp = 3,
+# lay        <- layout.fruchterman.reingold(net, weights = E(net)$weight^8, niter = 500000, coolexp = 3,
 #                                           maxdelta = vcount(net), area = (vcount(net)^2),
 #                                           repulserad = vcount(net)*vcount(net)^2)
 # p          <- graph.plot(net, layout = lay, vertex.fill = fc, vertex.size = degree(net), edge.alpha = 1/E(net)$weight, edge.color = 1/E(net)$weight) 
@@ -165,8 +166,7 @@
 # setwd("~/Desktop/")
 # 
 # # Grafik
-# 
-# pdf(file = "plot.pdf", height = 20, width = 20)
+# pdf(file = "plot.pdf", height = 30, width = 30)
 # p
 # p.org
 # dev.off()
@@ -182,3 +182,23 @@
 # 
 # # CSV
 # write.csv(lay, file = "layout.csv")
+# 
+# 
+# ###################################
+# # Rodet vægtning
+# 
+# adj[adj == 1] <- 0
+# adj[adj > 10] <- 10
+# 
+# adj.link <- adj.link * 2
+# 
+# adj <- adj.link + adj
+# 
+# adj * adj.link
+# 
+# 
+# event <- "Bal hos dronningen"
+# person <- "dronningen"
+# 
+# incidence[rownames(incidence) %in% person, colnames(incidence) %in% event] <- incidence[, colnames(incidence) %in% event] * 2
+# 

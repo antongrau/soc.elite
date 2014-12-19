@@ -189,30 +189,30 @@ SR.table                 <- function(sigma = 14, reach = 2.1, rel.all = rel.all,
 
 
 #### Data funktioner
-inddel.postnummer <- function(postnummer, postnumre.mat, del="Region"){
-  post.nummer <- postnummer
-  output   <- vector(length=length(post.nummer))
-  
-  if (identical(del, "Region")){
-    regioner <- levels(postnumre.mat$ADRESSERINGSNAVN)
-    post.region <- postnumre.mat$ADRESSERINGSNAVN
-    
-  }
-  if (identical(del, "Kommune")){
-    regioner <- levels(postnumre.mat$ADRESSERINGSNAVN_1)
-    post.region <- postnumre.mat$ADRESSERINGSNAVN_1
-  }
-  
-  for (i in 1:length(regioner)) {
-    inddeling <- postnumre.mat$POSTNR[post.region==regioner[i]]
-    output[post.nummer %in% inddeling] <- regioner[i]
-  }
-  output <- as.factor(output)
-  levels(output)[levels(output)=="FALSE"] <- "Missing"
-  return(as.factor(output))
-  # del, kan tage funktionerne: "Region" og "Kommune"
-  # Bemærk at hvis der er overlap så tager funktionen den seneste. Dvs. at fx. ballerup bliver spist af herlev.
-}
+# inddel.postnummer <- function(postnummer, postnumre.mat, del="Region"){
+#   post.nummer <- postnummer
+#   output   <- vector(length=length(post.nummer))
+#   
+#   if (identical(del, "Region")){
+#     regioner <- levels(postnumre.mat$ADRESSERINGSNAVN)
+#     post.region <- postnumre.mat$ADRESSERINGSNAVN
+#     
+#   }
+#   if (identical(del, "Kommune")){
+#     regioner <- levels(postnumre.mat$ADRESSERINGSNAVN_1)
+#     post.region <- postnumre.mat$ADRESSERINGSNAVN_1
+#   }
+#   
+#   for (i in 1:length(regioner)) {
+#     inddeling <- postnumre.mat$POSTNR[post.region==regioner[i]]
+#     output[post.nummer %in% inddeling] <- regioner[i]
+#   }
+#   output <- as.factor(output)
+#   levels(output)[levels(output)=="FALSE"] <- "Missing"
+#   return(as.factor(output))
+#   # del, kan tage funktionerne: "Region" og "Kommune"
+#   # Bemærk at hvis der er overlap så tager funktionen den seneste. Dvs. at fx. ballerup bliver spist af herlev.
+# }
 
 #' Tag relation
 #' 

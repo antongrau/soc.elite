@@ -18,51 +18,65 @@ graph.plot(graph, layout = layout.fruchterman.reingold(graph, weight =
 
 \item{layout}{a two-column numerical matrix with coordinates for each vertex of graph}
 
-\item{vertex.color}{}
+\item{vertex.color}{a single value or a vector of the same length and order as the vertices in graph. See \link{colors} for valid single values.}
 
-\item{vertex.fill}{}
+\item{vertex.fill}{a single value or a vector of the same length and order as the vertices in graph. See \link{colors} for valid single values.}
 
-\item{vertex.shape}{}
+\item{vertex.shape}{a single value or a vector of the same length and order as the vertices in graph.}
 
-\item{vertex.size}{}
+\item{vertex.size}{a single value or a vector of the same length and order as the vertices in graph.}
 
-\item{vertex.alpha}{}
+\item{vertex.alpha}{a single value between 0 and 1 or a vector of the same length and order as the vertices in graph.}
 
-\item{edges}{}
+\item{edges}{if TRUE edges are drawn.}
 
-\item{edge.color}{}
+\item{edge.color}{a single value or a vector of the same length and order as the edges in graph. See \link{colors} for valid single values.}
 
-\item{edge.alpha}{}
+\item{edge.alpha}{a single value between 0 and 1 or a vector of the same length and order as the edges in graph.}
 
-\item{edge.size}{}
+\item{edge.size}{a single value or a vector of the same length and order as the edges in graph.}
 
-\item{edge.line}{}
+\item{edge.line}{a single value or a vector of the same length and order as the edges in graph.}
 
-\item{edge.order}{}
+\item{edge.order}{a vector of the same length and order as the edges in graph. Edges are drawn in increasing order, with the highest overlapping those at a lower order.#'}
 
 \item{text}{}
 
-\item{text.size}{}
+\item{text.size}{if TRUE vertex names are drawn.}
 
-\item{text.color}{}
+\item{text.color}{a single value or a vector of the same length and order as the vertices in graph. See \link{colors} for valid single values.}
 
-\item{text.alpha}{}
+\item{text.alpha}{a single value or a vector of the same length and order as the vertices in graph.}
 
-\item{legend}{}
+\item{legend}{sets the position of the legend. "side" places the legend on the right hand side and "bottom" places the legend along the bottom of the plot.}
 
-\item{text.vjust}{}
+\item{text.vjust}{a number setting the amount of vertical adjustment of the position of the text}
 
-\item{midpoints}{}
+\item{midpoints}{if TRUE edges have a arrow at their middle showing the direction of the edge. This naturally only applies to directed networks.}
 
-\item{midpoint.arrow}{}
+\item{midpoint.arrow}{sets the character of the midpoint arrow, see \link{arrow}}
 
-\item{edge.text}{}
+\item{edge.text}{if not FALSE, then a vector with the labels for each edge.}
 
-\item{edge.text.size}{}
+\item{edge.text.size}{a single value or a vector of the same length and order as the edges in graph.}
 
-\item{edge.text.alpha}{}
+\item{edge.text.alpha}{a single value or a vector of the same length and order as the edges in graph.}
+}
+\value{
+a \link{ggplot2} plot
 }
 \description{
 graph.plot - Plots a weighted graph, with weighted edges as a default
+}
+\examples{
+data(den)
+health.affil  <- has.tags(den, c("Health"))
+den.health    <- den[den$AFFILIATION \%in\% health.affil,]
+net.org       <- elite.network.org(den.health)
+lay.org       <- layout.fruchterman.reingold(net.org)
+p             <- graph.plot(net.org, layout = lay.org, vertex.size = V(net.org)$members, vertex.fill = degree(net.org),
+                            edge.color = "darkmagenta", edge.alpha = log(1/E(net.org)$weight))
+p             <- p + scale_fill_continuous(low = "white", high = "magenta") + scale_size_continuous(range = c(3, 10))
+p + scale_alpha_continuous(range = c(0,1))
 }
 

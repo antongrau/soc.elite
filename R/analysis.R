@@ -7,6 +7,16 @@
 #' @param reach the maximum distance considered as a relation in the decompostition
 #' @return a numerical vector with the coreness score for each vertex
 #' @export
+#' @examples
+#' data(den)
+#' health.affil  <- has.tags(den, c("Health"))
+#' den.health    <- den[den$AFFILIATION %in% health.affil,]
+#' adj.health    <- adj.ind(den.health)
+#' net.health    <- graph.adjacency(adj.health)
+#' net.health    <- graph.adjacency(adj.health, mode = "undirected", weighted = TRUE)
+#' sp.health     <- shortest.paths(net.health)
+#' core.health   <- find.core(sp.health)
+#' table(core.health)
 
 find.core <- function(sp, reach = 2.1){
   sp.1     <- (sp <= reach) * 1
@@ -181,10 +191,6 @@ secondary.actors <- function(x, rel.all){
   }
   secondary
 }
-
-
-
-
 
 #' Network by variable
 #' 
@@ -599,6 +605,21 @@ efternavne    <- function(navne){
   }
   efternavne  
 }
+
+#' Categories from postal codes
+#' 
+#' @param x a numeric vector with 4 digit danish postal codes
+#' @return a data.frame with various factors
+#' @export
+
+inddel.postnummer <- function(x){
+  postnumre <- postnumre[duplicated(postnumre$POSTNR)==FALSE,]
+  jx <- data.frame(POSTNR = x)
+  xm <- join(jx, postnumre, by = "POSTNR")
+  xm
+}
+
+
 
 #' Create an organisation variable from relations matrix 
 #' 

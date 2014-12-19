@@ -21,6 +21,14 @@ line.plot(x, sort = TRUE, var.names = colnames(x), label.x = NULL,
 a ggplot2 lineplot
 }
 \description{
-Produces several line plots
+Produces a plot with several lines
+}
+\examples{
+data(den)
+health.affil  <- has.tags(den, c("Health"))
+den.health    <- den[den$AFFILIATION \%in\% health.affil,]
+net.health    <- elite.network(den.health)
+measures      <- data.frame(degree = degree(net.health, normalized = TRUE), betweenness = betweenness(net.health, normalized = TRUE))
+line.plot(measures)
 }
 

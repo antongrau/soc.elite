@@ -7,6 +7,15 @@
 NULL
 
 
+#' Power Elite 2013
+#' 
+#' A propopographic dataset on the Danish power elite in 2013
+#'
+#' @name pe13
+#' @docType data
+NULL
+
+
 # ##################################################################################
 # # Generate data 
 # source("~/My Dropbox/R/Elite/after_match_2.R")
@@ -68,8 +77,56 @@ NULL
 # den                         <- data
 # save(den, file = "~/soc.elite/data/den.rda")
 # 
-# ###########################################################################
-# # Nested
+
+###########################################################################
+# Power elite 2013 [pe13]
+
+# ind             <- read.csv("~/My Dropbox/Elite/Data/Data/Individuals_elite.csv", sep = "|", stringsAsFactors = FALSE, encoding = "UTF-8", dec = ".", na.strings = c("", NA))
+# load("~/My Dropbox/R/hoved/saved_results")
+# 
+# ind             <- ind[order(ind$Name),]
+# 
+# # Check ordering
+# all.equal(as.character(ind$Name), V(net.elite)$name)
+# 
+# # Order of levels in Sector_cat
+# oo              <- c(
+#   "Business: Top 200", 
+#   "Business: Multiposition",
+#   "Business: Medium-small",
+#   "Business: Investment and Pensions", 
+#   
+#   "Interest groups: Employers and business",
+#   "Interest groups: Unions",
+#   
+#   "Interest groups: Farming",
+#   "Interest groups: Consumers",
+#   
+#   "State and politics: Royal court", 
+#   "State and politics: Politics",
+#   "State and politics: Public Officials", 
+#   
+#   "Science and education: University leaders",
+#   "Science and education: Economists and political scientists", 
+#   "Science and education: Other scientists", 
+#   "Science and education: Education",
+#   
+#   "Culture and Law: Culture and charities" , 
+#   "Culture and Law: Law"
+# )
+# 
+# ind$Sector_order            <- factor(ind$Sector_order, levels = oo)
+# 
+# # Rownames
+# rownames(ind) <- ind$Name
+# 
+# 
+# # Save
+# pe13          <- ind
+# save(pe13, net.elite, file = "~/soc.elite/data/pe13.rda")
+
+###########################################################################
+# Nested
 # 
 # indlejrede           <- read.csv("~/My Dropbox/Elite/Dataindsamling/Indlejrede organisationer.csv",
 #                                  fileEncoding="UTF-8", as.is = TRUE, na.strings="")
@@ -79,8 +136,12 @@ NULL
 #                           "Org.id.nested", "Org.id.nested.in", "Same.org", "Kill", 
 #                           "Totally.nested.in.less.than.12", "Nested.in.more.than.12", 
 #                           "MATCH")
-# 
-# 
+# nested.latin         <- sapply(nested, iconv, from = "UTF-8", to = "latin1", sub = "byte")
+# nested.utf           <- sapply(nested.latin, iconv, from = "latin1", to = "UTF-8")
+# View(nested.latin)
+# View(nested)
+# table(is.na(nested))
+# table(is.na(nested.latin))
 # ###############################################################################
 # # # Names.gender
 # load("~/My Dropbox/R/Elite/Navne/names_gender")
