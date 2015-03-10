@@ -704,4 +704,32 @@ vertex.measures.directed <- function(net, n = 2.5){
   out
 }
 
+#' Do you know?
+#'
+#' Find out how well two groups of people know each other
+#'
+#'@param graph a igraph network object created with the /link{elite.network} function.
+#'@param you a character vector of names present in graph
+#'@param people a character vector of names preferably present in graph 
+#'@param how.well a number that says how weak the weakest considered tie is. The higher the weaker.
+#'@return a numeric vector with the /link{graph.strength} of the individuals named in "you". The graph strength is the sum of weighted edges within the group "people".
+#'@export
+
+
+do.you.know <- function(graph, you, people, how.well = 1){
+  
+  people.position    <- which(V(graph)$name %in% people)
+  
+  people.in.your.hood <- function(graph, your.name, people.position, how.well = 1){
+    your.name.position           <- which(V(graph)$name %in% your.name)
+    you.and.your.people.position <- unique(c(your.name.position, people.position))
+    people.graph                 <- induced.subgraph(graph, you.and.your.people.position)
+    you.in.people.graph          <- which(V(people.graph)$name %in% your.name)
+    people.graph                 <- delete.edges(graph = people.graph, edges = which(E(people.graph)$weight > how.well))
+    graph.strength(people.graph, vids = you.in.people.graph, weights = 1/E(people.graph)$weight, loops = FALSE)
+  }
+  score <- sapply(you, people.in.your.hood, graph = graph, people.position = people.position, how.well = how.well)
+  names(score) <- you
+  score
+}
 

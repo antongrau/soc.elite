@@ -3,6 +3,7 @@
 export(adj.ind)
 export(adj.org)
 export(dist.plot)
+export(do.you.know)
 export(edge.coord)
 export(efternavne)
 export(elite.network)
