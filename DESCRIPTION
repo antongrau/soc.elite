@@ -12,5 +12,6 @@ Depends:
     ggplot2,
     igraph,
     plyr,
-    reshape2
+    reshape2,
+    stringr
 License: GPL-3

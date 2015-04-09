@@ -89,8 +89,8 @@ NULL
 # for (i in 1:nrow(cvr.all))  cvr[which(rel.all$ORG_NAVN ==  cvr.all$ORG_NAVN[i])] <- cvr.all$CVR[i]
 # 
 # kilde            <- as.factor(rel.all$kilde)
-# levels(kilde)    <- c(NA, "Events", "Parliament", "Foundations", "Commissions", 
-#                          "NGO", "State", "Corporations", "VL-networks")
+# levels(kilde)    <- c("State", "Events", "Parliament", "Foundations", "Commissions", 
+#                          "NGO", "State", "Corporations", "VL-networks") # Her er der et ækelt hack der tager nogle grupper ud der havde "" som kilde og angiver dem til stat.
 # org              <- rel.all$ORG_NAVN
 # 
 # 
@@ -113,12 +113,11 @@ NULL
 #                                )
 # 
 # 
-# 
 # # Translated version
 # # Export
 # den                         <- data
 # save(den, file = "~/soc.elite/data/den.rda")
-# 
+
 
 ###########################################################################
 # Power elite 2013 [pe13]

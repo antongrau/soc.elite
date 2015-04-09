@@ -1,7 +1,31 @@
 # Lav et script der gemmer navne datasættet
 # Dokumenter de sidste funktioner
 # Lav et eksempel på udtræk for individer, organisationer og for tags
-# Gem resultater
+# Gem resultater så de kan bruges i andre analyser
+# Flere datasæt: Inner Circle - Firmaets Mænd - Top embedsmænd
+
+
+# Lister af individer eller affiliations - de lister skal kunne bruges til at konstruere sektor degree
+# Vi kan forestille os: 
+# Adelige
+# Politikere
+# Forskere
+# Professorer
+# Fagforeningsledere
+# Folk med tillidsposter i fagbevægelsen
+# Top 1000 direktører
+# Top 1000 direktører og bestyrelsesformænd
+# DI - Tillidsposter og udvalgsposter
+# Ordner - Riddere af Dannebrog
+
+
+
+
+
+
+
+
+
 
 #########################################################################
 # Find the elite - eksempel:

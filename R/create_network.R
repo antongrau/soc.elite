@@ -9,9 +9,10 @@
 #' @param ... further arguments are passed on to \link{graph.incidence}
 #' @export
 
-two.mode <- function(rel, weighted=TRUE, directed=FALSE, ... ){
+two.mode <- function(rel, weighted = TRUE, directed = FALSE, ... ){
   
   netmat           <- droplevels(data.frame(rel$NAME, rel$AFFILIATION))
+  
   colnames(netmat) <- c("navn", "org")
   
   ### Nu laves netværksobjekterne
@@ -58,6 +59,7 @@ largest.component <- function(graph, cut.off = 1){
 #' @param x an affiliation edge list
 #' @param tags is a character vector of tags
 #' @param res if "affiliations" \code{has.tags} returns a character vector with unique affiliation names. If res is "names", a character vector of unique names is returned. If res is "relations", a subset of x is returned.
+#' @param silent if TRUE the table with the number of matched positions per tag is not shown.
 #' @export
 #' @examples
 #' data(den)
@@ -65,12 +67,19 @@ largest.component <- function(graph, cut.off = 1){
 #' has.tags(den, tags = c("Youth", "Children"), res = "names")
 #' has.tags(den, tags = c("Youth", "Children"), res = "relations")
 
-has.tags       <- function(x, tags, res = "affiliations"){
+has.tags       <- function(x, tags, res = "affiliations", silent = FALSE){
   
   org.navn     <- as.character(x$AFFILIATION)
   sectors      <- data.frame(x$TAG1, x$TAG2, x$TAG3, x$TAG4, x$TAG5, x$TAG6, x$TAG7) 
   sector.match <- sapply(sectors, "%in%", tags)
   tag.orgs     <- unique(org.navn[which(rowSums(sector.match) >= 1)])
+  
+  if (identical(silent, FALSE)){
+  matched.tags     <- factor(sectors[sector.match], levels = tags)
+  how.many.per.tag <- cbind("Matched positions" = table(matched.tags))
+  print(how.many.per.tag)
+  cat("\n", "\n")
+  }
   
 if(res == "affiliations"){
   return(as.character(tag.orgs))
@@ -84,6 +93,30 @@ if(res == "relations"){
   droplevels(x[x$AFFILIATION %in% tag.orgs,])
 }
 }
+
+#' show.all.tags
+#' 
+#' Displays a matrix with all the tags in den.
+#' 
+#' @param den a affiliation edgelist
+#' @export
+
+show.all.tags   <- function(den){
+  tag.col       <- grep("TAG", colnames(den))
+  den.tags      <- den[, tag.col]
+  den.tags      <- apply(den.tags, 2, as.character)
+  vector.tags   <- as.vector(den.tags)
+  vector.tags   <- vector.tags[vector.tags != ""]
+  
+  den.unique.affils <- den[duplicated(den$AFFILIATION) == FALSE,]
+  den.tags      <- den.unique.affils[, tag.col]
+  den.tags      <- apply(den.tags, 2, as.character)
+  vector.tags.affil    <- as.vector(den.tags)
+  vector.tags.affil    <- vector.tags.affil[vector.tags.affil != ""]
+  cbind(Positions = table(vector.tags), Affiliations = table(vector.tags.affil))
+}
+
+
 
 
 ##########################################################################################

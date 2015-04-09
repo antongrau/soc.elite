@@ -1,10 +1,14 @@
 # Reports
 
 #' A report of the first neighborhood of an individiual
-#' @return A list of lists - a list of plots, a dataframe with affiliations, a network object
-report.two.mode <- function(name, n = Inf){
-  data(den)  
-  ind       <- den$NAME %in% name  
+#' @param name a single or several names
+#' @param den an affiliation edge list in the \link{den} format
+#' @param the maximum social distance - or highest edge weight - that a person can be from the individuals in name
+#' @return a ggplot ego.plot
+#' @export
+
+ego.network.two.mode   <- function(name, den, n = Inf){
+  ind         <- den$NAME %in% name  
   stopifnot("Wrong name" = any(ind))
   affil        <- as.character(den$AFFILIATION[ind])
   rel.affil    <- den[den$AFFILIATION %in% affil,]
@@ -25,50 +29,31 @@ report.two.mode <- function(name, n = Inf){
 graph.plot.twomode(net.two, text = TRUE, vertex.fill = type) + scale_fill_manual(values = c("black", "slateblue", "white"))
 }
 
-#' Twomode graphs
+#' Ego network
 #' 
-#' @param graph
-#' @param layout
-#' @param vertex.fill
-#' @param vertex.size
-#' @param edge.color
-#' @param edge.alpha
-#' @param ...
+#' An ego network of individuals
+#' @param name
+#' @param den
+#' @param n
 #' @return a ggplot2 plot
 #' @export
 
-
-graph.plot.twomode <- function(graph, layout = "default",
-                               vertex.fill = "type", vertex.size = "degree",
-                               edge.color = "edge.betweenness", edge.alpha = "edge.betweenness", ...){
+ego.network      <- function(name, den, n = Inf){
+  ind            <- den$NAME %in% name  
+  stopifnot("Wrong name" = any(ind))
+  affil          <- as.character(den$AFFILIATION[ind])
+  rel.affil      <- den[den$AFFILIATION %in% affil,]
+  net.elite      <- elite.network(rel.affil)
+  ind.e          <- V(net.elite)$name %in% name
+  dist.to.ind    <- net.elite[ind.e,]
+  delete.them    <- which(dist.to.ind >= n & ind.e == FALSE)
+  net.elite      <- delete.vertices(net.elite, delete.them)
   
-  if (is.bipartite(graph)==FALSE) stop("Graph is not a two-mode network")
-  
-  scale.adjustments <- list()
-  
-  if (identical(vertex.fill, "type")){
-    vertex.fill            <- as.factor(V(graph)$type)
-    levels(vertex.fill)    <- c("Individual", "Affiliation")
-    scale.adjustments$fill <- scale_fill_manual(values = c("black", "white"), name = "Type")
-  }
-  
-  if (identical(edge.color, "edge.betweenness")){
-    edge.color              <- edge.betweenness(graph)
-    scale.adjustments$color <- scale_color_continuous(high = "darkblue", low = "papayawhip", name = "Edge betweeness")
-  }
-  
-  if (identical(edge.alpha, "edge.betweenness")){
-    edge.alpha              <- edge.betweenness(graph)
-    scale.adjustments$alpha <- scale_alpha_continuous(range = c(0.3, 1))
-  }
-    
-  if (identical(vertex.size, "degree")){
-  vertex.size <- vector(length=vcount(graph))
-  vertex.size[V(graph)$type == FALSE] <- degree(bipartite.projection(graph)$proj1)
-  vertex.size[V(graph)$type == TRUE]  <- degree(bipartite.projection(graph)$proj2)
-  }
-    
-  
-  graph.plot(graph, vertex.fill = vertex.fill, vertex.size = vertex.size,
-             edge.alpha = edge.alpha, edge.color = edge.color, ...) + scale.adjustments
+  ego.name       <- V(net.elite)$name
+  ego.name[(V(net.elite)$name %in% name) == FALSE] <- ""
+  V(net.elite)$ego.name   <- ego.name
+  V(net.elite)$ego.degree <- net.elite[V(net.elite)$name %in% name,]
+  V(net.elite)$ego.degree
+  net.elite
 }
+

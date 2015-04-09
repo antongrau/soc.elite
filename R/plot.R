@@ -110,6 +110,10 @@ graph.plot  <- function(graph, layout = layout.fruchterman.reingold(graph, weigh
   text.aes$x              <- vertex.coords$x
   text.aes$y              <- vertex.coords$y
   text.aes$label          <- rownames(vertex.coords)
+  if(length(text)>1){
+  text.aes$label          <- text
+  text                    <- TRUE
+  }
   
   # Plot edges
   p <- ggplot()
@@ -346,5 +350,56 @@ tile.plot <- function(adj.mat, max.color.value = median(adj.mat)*2){
   p                  <- ggplot(data = mti, aes(x = rows, y = cols, fill = color, label = value)) + geom_tile(color = "black") + geom_text(alpha = 1)
   p                  <- p + sc
   p
+}
+
+
+# Function does not create a default layout that is different from that produced by graph.plot
+
+#' Twomode graphs
+#' 
+#' @param graph a twomode graph
+#' @param layout if "default" 
+#' @param vertex.fill
+#' @param vertex.size
+#' @param edge.color
+#' @param edge.alpha
+#' @param ...
+#' @return a ggplot2 plot
+#' @export
+
+
+graph.plot.twomode <- function(graph, layout = "default",
+                               vertex.fill = "type", vertex.size = "degree",
+                               edge.color = "edge.betweenness", edge.alpha = "edge.betweenness", ...){
+  
+  if (is.bipartite(graph)==FALSE) stop("Graph is not a two-mode network")
+  
+  scale.adjustments <- list()
+  
+  if (identical(vertex.fill, "type")){
+    vertex.fill            <- as.factor(V(graph)$type)
+    levels(vertex.fill)    <- c("Individual", "Affiliation")
+    scale.adjustments$fill <- scale_fill_manual(values = c("black", "white"), name = "Type")
+  }
+  
+  if (identical(edge.color, "edge.betweenness")){
+    edge.color              <- edge.betweenness(graph)
+    scale.adjustments$color <- scale_color_continuous(high = "darkblue", low = "papayawhip", name = "Edge betweeness")
+  }
+  
+  if (identical(edge.alpha, "edge.betweenness")){
+    edge.alpha              <- edge.betweenness(graph)
+    scale.adjustments$alpha <- scale_alpha_continuous(range = c(0.3, 1))
+  }
+  
+  if (identical(vertex.size, "degree")){
+    vertex.size <- vector(length=vcount(graph))
+    vertex.size[V(graph)$type == FALSE] <- degree(bipartite.projection(graph)$proj1)
+    vertex.size[V(graph)$type == TRUE]  <- degree(bipartite.projection(graph)$proj2)
+  }
+  
+  
+  graph.plot(graph, vertex.fill = vertex.fill, vertex.size = vertex.size,
+             edge.alpha = edge.alpha, edge.color = edge.color, ...) + scale.adjustments
 }
 

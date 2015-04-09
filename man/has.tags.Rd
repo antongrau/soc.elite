@@ -4,7 +4,7 @@
 \alias{has.tags}
 \title{Has.tags}
 \usage{
-has.tags(x, tags, res = "affiliations")
+has.tags(x, tags, res = "affiliations", silent = FALSE)
 }
 \arguments{
 \item{x}{an affiliation edge list}
@@ -12,6 +12,8 @@ has.tags(x, tags, res = "affiliations")
 \item{tags}{is a character vector of tags}
 
 \item{res}{if "affiliations" \code{has.tags} returns a character vector with unique affiliation names. If res is "names", a character vector of unique names is returned. If res is "relations", a subset of x is returned.}
+
+\item{silent}{if TRUE the table with the number of matched positions per tag is not shown.}
 }
 \description{
 Selects all affiliations that have one or several tags

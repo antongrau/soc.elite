@@ -4,16 +4,26 @@
 \alias{hvem}
 \title{Hvem er det?}
 \usage{
-hvem(name = NULL, relation.matrix = rel.all, memberships = TRUE)
+hvem(name, den = "den", only.affiliations = TRUE, ignore.case = TRUE,
+  tags = FALSE, ...)
 }
 \arguments{
 \item{name}{the name of the individual}
 
-\item{relation.matrix}{a affiliation edge list}
+\item{den}{an affiliation edge list in a similar format to \link{den}, if "den" the den dataset is used.}
 
-\item{memberships}{if FALSE returns all direct contacts}
+\item{only.affiliations}{if TRUE returns the affiliations of the individual}
+
+\item{ignore.case}{if TRUE grep is not case sensitive}
+
+\item{...}{further arguments are passed on to \link{grep}}
+
+\item{if}{TRUE tags are returned}
+}
+\value{
+A matrix with names and affiliation
 }
 \description{
-Returns the affiliation memberships of an individual, or all direct contacts
+Returns the affiliation memberships of an individual, or all direct contacts. Names are matched with grep.
 }
 

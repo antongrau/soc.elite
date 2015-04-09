@@ -1,5 +1,6 @@
 ###############################################################################
 ######## Analysis
+
 #' Find the core in an elite network
 #' 
 #' Uses the k-core decomposition, see \link{graph.adjacency}, to identify the elite
@@ -32,6 +33,7 @@ find.core <- function(sp, reach = 2.1){
 #' @param reach the maximum distance considered as a relation in the decompostition
 #' @return a numerical vector with the coreness score for each vertex
 #' @export
+
 find.core.net <- function(net, reach = 2.1){
   sp       <- shortest.paths(net)
   sp       <- (sp <= reach) * 1
@@ -43,7 +45,7 @@ find.core.net <- function(net, reach = 2.1){
 #' Elite network
 #'
 #' Construct a weighted elite network
-#' @param rel.all an affiliation edge list
+#' @param rel.all an affiliation edge list, in the \link{den} format.
 #' @param sigma the number of members in an affiliation above which all affiliations are weighted down
 #' @return a elite network object
 #' @export
@@ -125,7 +127,7 @@ elite.network     <- function(rel.all = rel.all, sigma = 14){
 #' Elite network for affiliations
 #'
 #' Construct a weighted elite network of affiliations
-#' @param rel.all an affiliation edge list
+#' @param rel.all an affiliation edge list in the\link{den} format.
 #' @param sigma the number of members in an affiliation above which all affiliations are weighted down
 #' @return a elite network object
 #' @export
@@ -167,11 +169,11 @@ elite.network.org     <- function(rel.all = rel.all, sigma = 14){
 
 #' Secondary actors
 #' 
-#' Identify secondary actors within a group. A secondary actor is an individual with a neighborhood that is perfectly nested within another individuals neighborhood.
+#' Identify secondary actors within a group. A secondary actor is an individual with a neighborhood that is perfectly nested within the neighborhood of another individual.
 #' Here it is identified by comparing memberships between all agents within a group. If any individual has the exact same memberships as another individual he is considered a secondary actor.
 #' @param x a named core numerical vector with coreness values, see \link{graph.coreness}
 #' @param rel.all an affiliation edge list
-#' @return something
+#' @return a character vector
 #' @export
 secondary.actors <- function(x, rel.all){
   
@@ -328,20 +330,16 @@ describe.network <- function(graph, variabel, org.data){
   round(result.matrix, 1)
 }
 
-
-
 ######## Overlapping Social Circles by Alba and Kadushin
 # Der er stadig noget bøvl med at trække 1 fra de overlappende hoods
 
 #' Social proximity
 #' 
-#' Calculates the social proximity of all vertices in a graph as described by Alba and Kadushin
+#' Calculates the social proximity of all vertices in a graph as described by Alba and Kadushin.
 #' @param graph is a \link{igraph} network
 #' @param neihborhood a numerical value indicating the order of the neighborhood, see \link{neighborhood}
 #' @param mode if "total" the proximity is calculated on the size of the combined neighborhood. If "own" or "other" proximity is calculated on the basis of either of the vertices in a relation.
 #' @return a matrix with proximity measures
-
-
 
 proximity <- function(graph, neighborhood = 2, mode = "total"){
   n2 <- neighborhood(graph, order=neighborhood)
@@ -478,29 +476,69 @@ who  <-  function(net, name=NULL, relation.matrix=rel, vertex=NULL){
   print(noquote(as.matrix(mem)))
 }
 
-#' Hvem er det?
+#' Hvad er det?
 #' 
-#' Returns the affiliation memberships of an individual, or all direct contacts
-#' @param name the name of the individual
-#' @param relation.matrix a affiliation edge list
-#' @param memberships if FALSE returns all direct contacts
+#' Returns the list of members of the affiliations. Names are matched via grep.
+#' @param affil a character string with the name of one or several affiliations
+#' @param den an affiliation edge list in a similar format to \link{den}, if "den" the den dataset is used.
+#' @param ignore.case if TRUE grep is not case sensitive
+#' @param if TRUE tags are returned
+#' @param ... further arguments are passed on to \link{grep}
+#' @return A matrix with names and affiliation
 #' @export
 
-hvem  <-  function(name=NULL, relation.matrix=rel.all, memberships = TRUE){
+hvad          <- function(affil, den = "den", ignore.case = TRUE, tags = FALSE, ...){
   
-  ## Finding the name and vertex number
-  medlemskaber            <- as.character(relation.matrix$AFFILIATION[relation.matrix$NAME == name])
-  rels                    <- relation.matrix[relation.matrix$AFFILIATION %in% medlemskaber,]
-  out                     <- cbind(rels$NAME, rels$AFFILIATION)
+  if (identical(den, "den")) data(den, envir = environment())
+
+  pattern     <- paste(affil, collapse = "|")
+  found       <- grep(pattern, den$AFFILIATION, ignore.case = ignore.case, ...)
+  den.found   <- den[found,]
+  out         <- data.frame(Name = den.found$NAME, Affiliation = den.found$AFFILIATION, Role = den.found$ROLE)
   
-  if (memberships == FALSE){ 
-    out <- out[order(rels$AFFILIATION),]
-    out[is.na(out)] <- ""
-    cat( "Name: ", name, "\n")  
-    print(noquote(as.matrix(out)))
-  }else{
-    unique(as.matrix(rels$AFFILIATION))
+  if(identical(tags, TRUE)){
+    tags      <- paste(den.found$TAG1, den.found$TAG2, den.found$TAG3, den.found$TAG4, den.found$TAG5, den.found$TAG6, den.found$TAG7, sep = " ")
+    tags      <- str_trim(tags)
+    out       <- cbind(out, Tags = tags)
   }
+  out  
+}
+
+#' Hvem er det?
+#' 
+#' Returns the affiliation memberships of an individual, or all direct contacts. Names are matched with grep.
+#' @param name the name of the individual
+#' @param den an affiliation edge list in a similar format to \link{den}, if "den" the den dataset is used.
+#' @param only.affiliations if TRUE returns the affiliations of the individual
+#' @param ignore.case if TRUE grep is not case sensitive
+#' @param if TRUE tags are returned
+#' @param ... further arguments are passed on to \link{grep}
+#' @return A matrix with names and affiliation
+#' @export
+
+hvem          <- function(name, den = "den", only.affiliations = TRUE, ignore.case = TRUE, tags = FALSE, ...){
+    
+    if (identical(den, "den")) data(den, envir = environment())
+    
+    pattern     <- paste(name, collapse = "|")
+    found       <- grep(pattern, den$NAME, ignore.case = ignore.case)
+    found.names <- unique(as.character(den$NAME[found]))
+    found.affil <- den$AFFILIATION[found]
+    den.found   <- den[den$AFFILIATION %in% found.affil,]
+    out         <- data.frame(Name = den.found$NAME, Affiliation = den.found$AFFILIATION, Role = den.found$ROLE)
+    
+    if(identical(tags, TRUE)){
+      tags      <- paste(den.found$TAG1, den.found$TAG2, den.found$TAG3, den.found$TAG4, den.found$TAG5, den.found$TAG6, den.found$TAG7, sep = " ")
+      tags      <- str_trim(tags)
+      out       <- cbind(out, Tags = tags)
+    }
+    
+    if(identical(only.affiliations, TRUE)){
+      out <- out[out$Name %in% found.names,]
+      out <- out[duplicated(data.frame(out$Name, out$Affiliation)) == FALSE,]
+    }
+    rownames(out) <- NULL
+    out
 }
 
 #' Combine descriptions
@@ -582,11 +620,8 @@ find.gender <- function(navne){
 fornavne      <- function(navne){
   navne           <- as.character(navne)
   n.list          <- strsplit(navne, " ")
-  fornavne        <- vector(length=length(navne))
-  for (i in 1:length(fornavne)){
-    fornavne[i] <- n.list[[i]][1]
-  }
-  fornavne  
+  fornavne        <- sapply(n.list, head, 1)
+  fornavne
 }
 
 #' Extract last names
@@ -599,11 +634,7 @@ fornavne      <- function(navne){
 efternavne    <- function(navne){
   navne           <- as.character(navne)
   n.list          <- strsplit(navne, " ")
-  efternavne      <- vector(length=length(navne))
-  for (i in 1:length(efternavne)){
-    efternavne[i] <- tail(n.list[[i]], 1)
-  }
-  efternavne  
+  efternavne      <- sapply(n.list, tail, 1)
 }
 
 #' Categories from postal codes
@@ -708,15 +739,25 @@ vertex.measures.directed <- function(net, n = 2.5){
 #'
 #' Find out how well two groups of people know each other
 #'
-#'@param graph a igraph network object created with the /link{elite.network} function.
-#'@param you a character vector of names present in graph
-#'@param people a character vector of names preferably present in graph 
-#'@param how.well a number that says how weak the weakest considered tie is. The higher the weaker.
-#'@return a numeric vector with the /link{graph.strength} of the individuals named in "you". The graph strength is the sum of weighted edges within the group "people".
-#'@export
-
+#' @param graph a igraph network object created with the /link{elite.network} function.
+#' @param you a character vector of names present in graph
+#' @param people a character vector of names preferably present in graph 
+#' @param how.well a number that says how weak the weakest considered tie is. The higher the weaker.
+#' @return a numeric vector with the /link{graph.strength} of the individuals named in "you". The graph strength is the sum of weighted edges within the group "people".
+#' @export
+#' @examples
+#' library(soc.elite)
+#' data(den)
+#' data(pe13)
+#' graph         <- elite.network(den)
+#' you           <- pe13$Name
+#' people        <- has.tags(den, tags = c("Political party"))
+#' how.well      <- 2
+#' do.you.know(graph, you, people, how.well)
 
 do.you.know <- function(graph, you, people, how.well = 1){
+  
+  stopifnot(inherits(graph, "elite.network")) # This is not a elegant test
   
   people.position    <- which(V(graph)$name %in% people)
   
@@ -728,8 +769,7 @@ do.you.know <- function(graph, you, people, how.well = 1){
     people.graph                 <- delete.edges(graph = people.graph, edges = which(E(people.graph)$weight > how.well))
     graph.strength(people.graph, vids = you.in.people.graph, weights = 1/E(people.graph)$weight, loops = FALSE)
   }
-  score <- sapply(you, people.in.your.hood, graph = graph, people.position = people.position, how.well = how.well)
+  score        <- sapply(you, people.in.your.hood, graph = graph, people.position = people.position, how.well = how.well)
   names(score) <- you
   score
 }
-

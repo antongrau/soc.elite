@@ -5,4 +5,5 @@
 #' @import ggplot2
 #' @import igraph
 #' @import plyr
+#' @import stringr
 NULL
