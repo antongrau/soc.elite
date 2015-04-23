@@ -70,13 +70,11 @@ largest.component <- function(graph, cut.off = 1){
 has.tags       <- function(x, tags, res = "affiliations", silent = FALSE){
   
   org.navn     <- as.character(x$AFFILIATION)
-  sectors      <- data.frame(x$TAG1, x$TAG2, x$TAG3, x$TAG4, x$TAG5, x$TAG6, x$TAG7) 
-  sector.match <- sapply(sectors, "%in%", tags)
+  sector.match <- sapply(tags, grepl, x = x$TAGS)
   tag.orgs     <- unique(org.navn[which(rowSums(sector.match) >= 1)])
   
   if (identical(silent, FALSE)){
-  matched.tags     <- factor(sectors[sector.match], levels = tags)
-  how.many.per.tag <- cbind("Matched positions" = table(matched.tags))
+  how.many.per.tag <- cbind("Matched positions" = colSums(sector.match))
   print(how.many.per.tag)
   cat("\n", "\n")
   }
@@ -100,20 +98,16 @@ if(res == "relations"){
 #' 
 #' @param den a affiliation edgelist
 #' @export
+#' @examples
+#' data(den)
+#' show.all.tags(den)
 
 show.all.tags   <- function(den){
-  tag.col       <- grep("TAG", colnames(den))
-  den.tags      <- den[, tag.col]
-  den.tags      <- apply(den.tags, 2, as.character)
-  vector.tags   <- as.vector(den.tags)
-  vector.tags   <- vector.tags[vector.tags != ""]
-  
-  den.unique.affils <- den[duplicated(den$AFFILIATION) == FALSE,]
-  den.tags      <- den.unique.affils[, tag.col]
-  den.tags      <- apply(den.tags, 2, as.character)
-  vector.tags.affil    <- as.vector(den.tags)
-  vector.tags.affil    <- vector.tags.affil[vector.tags.affil != ""]
-  cbind(Positions = table(vector.tags), Affiliations = table(vector.tags.affil))
+  tags                <- as.character(den$TAGS)
+  tags.positions      <- table(unlist(strsplit(tags, ", ")))
+  tags.affiliations   <- tags[duplicated(den$AFFILIATION) == FALSE]
+  tags.affiliations   <- table(unlist(strsplit(tags.affiliations, ", ")))
+  cbind(Positions = tags.positions, Affiliations = tags.affiliations)
 }
 
 
@@ -125,34 +119,29 @@ show.all.tags   <- function(den){
 #' Tag network
 #' 
 #' Creates and plots a tag network from an affilation list
-#' @param rel.tag an affiliation list
+#' @param den an affiliation list
 #' @param plot If TRUE the network is plotted
-#' @param link.col is the column name in the affiliation list that is used as the edges
 #' @return a graph object or a plot
 #' @export
 
-tag.network         <- function(rel.tag, plot = TRUE, link.col = "ORG_NAVN"){
+tag.network         <- function(den, plot = TRUE){
   
-  tag.edge1           <- cbind(link.col = subset(rel.tag, select = link.col), TAG = rel.tag$TAG1)
-  tag.edge2           <- cbind(link.col = subset(rel.tag, select = link.col), TAG = rel.tag$TAG2)
-  tag.edge3           <- cbind(link.col = subset(rel.tag, select = link.col), TAG = rel.tag$TAG3)
-  tag.edge4           <- cbind(link.col = subset(rel.tag, select = link.col), TAG = rel.tag$TAG4)
-  tag.edge5           <- cbind(link.col = subset(rel.tag, select = link.col), TAG = rel.tag$TAG5)
-  tag.edge6           <- cbind(link.col = subset(rel.tag, select = link.col), TAG = rel.tag$TAG6)
-  tag.edge7           <- cbind(link.col = subset(rel.tag, select = link.col), TAG = rel.tag$TAG7)
+  den.unique          <- den[duplicated(den$AFFILIATION)==FALSE,]
+  split.den           <- split(x = den.unique, f = den.unique$AFFILIATION)
   
-  tag.edges           <- as.data.frame(rbind(tag.edge1, tag.edge2, tag.edge3, tag.edge4, tag.edge5, tag.edge6, tag.edge7))
-  colnames(tag.edges) <- c("ORG_NAVN", "TAG")
-  exclude             <- which(is.na(tag.edges$TAG) | tag.edges$TAG == "" | tag.edges$TAG == " ")
-  if(length(exclude) > 0) tag.edges <- tag.edges[-exclude,]
-  tag.edges           <- droplevels(tag.edges)
-  tabnet              <- table(tag.edges)
-  tabnet              <- as.matrix(tabnet)
-  adj                 <- t(tabnet)%*%tabnet
+  affil.to.tag.net     <- function(x){
+    tag.vector         <- unlist(strsplit(as.character(x$TAGS), ", "))
+    affiliation.vector <- rep(as.character(x$AFFILIATION), times = length(tag.vector))
+    cbind(AFFILIATION = affiliation.vector , TAG = tag.vector)
+  }
   
-  net.tag             <- graph.adjacency(adj, mode = "undirected", weighted = TRUE)
-  
+  split.tag.edges     <- lapply(split.den, affil.to.tag.net)
+  tag.edges           <- do.call(rbind, split.tag.edges)
+  tag.incidence       <- Matrix(table(tag.edges[,1], tag.edges[,2]))
+  net.tag             <- graph.incidence(tag.incidence)
+    
   if(identical(plot, TRUE)){
+    net.tag             <- bipartite.projection(net.tag)$proj2
     wc                  <- as.factor(fastgreedy.community(net.tag)$membership)
     graph.plot(net.tag, text = TRUE, vertex.size = degree(net.tag), edge.alpha = E(net.tag)$weight, vertex.fill = wc) + scale_size_continuous(range = c(2, 10))
   }else{

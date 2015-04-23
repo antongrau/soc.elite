@@ -58,8 +58,8 @@ NULL
 NULL
 
 
-# ##################################################################################
-# # Generate data 
+##################################################################################
+# Generate data 
 # source("~/My Dropbox/R/Elite/after_match_2.R")
 # 
 # rel.all          <- read.csv("~/My Dropbox/Elite/Data/Data/Relation_ALL.csv", sep="|", encoding="UTF-8", stringsAsFactor = FALSE)
@@ -93,6 +93,17 @@ NULL
 #                          "NGO", "State", "Corporations", "VL-networks") # Her er der et ækelt hack der tager nogle grupper ud der havde "" som kilde og angiver dem til stat.
 # org              <- rel.all$ORG_NAVN
 # 
+# # TAGS
+# 
+# tag.frame <- rel.all[,grep("TAG", colnames(rel.all))]
+# tag.frame <- apply(tag.frame, 2,as.character)
+# tag.frame[tag.frame == ""] <- NA
+# 
+# nif          <- as.list(as.data.frame(t(tag.frame)))
+# hurma        <- lapply(nif, na.omit)
+# tag.label    <- unlist(lapply(hurma, paste, collapse = ", "))
+# 
+# 
 # 
 # # Output
 # data             <- data.frame(NAME        = rel.all$NAVN_MATCH,
@@ -103,13 +114,7 @@ NULL
 #                                SOURCE      = kilde,
 #                                BIQ_LINK    = biq.link,
 #                                CVR         = cvr,
-#                                TAG1        = rel.all$TAG1,
-#                                TAG2        = rel.all$TAG2,
-#                                TAG3        = rel.all$TAG3,
-#                                TAG4        = rel.all$TAG4,
-#                                TAG5        = rel.all$TAG5,
-#                                TAG6        = rel.all$TAG6,
-#                                TAG7        = rel.all$TAG7         
+#                                TAGS        = tag.label     
 #                                )
 # 
 # 
@@ -117,7 +122,7 @@ NULL
 # # Export
 # den                         <- data
 # save(den, file = "~/soc.elite/data/den.rda")
-
+# 
 
 ###########################################################################
 # Power elite 2013 [pe13]

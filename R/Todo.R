@@ -4,6 +4,8 @@
 # Gem resultater så de kan bruges i andre analyser
 # Flere datasæt: Inner Circle - Firmaets Mænd - Top embedsmænd
 
+# Tags har skiftet format - Tjek op på funktioner der bruger TAGS - has.tags er rettet, men show.all.tags mangler
+
 
 # Lister af individer eller affiliations - de lister skal kunne bruges til at konstruere sektor degree
 # Vi kan forestille os: 
