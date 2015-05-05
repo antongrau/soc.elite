@@ -189,3 +189,54 @@ adj.org <- function(rel){
   adj             <- t(tabnet)%*%tabnet # Org*Org
   return(adj)
 }
+
+#' Create a den object from the elite database
+#' 
+#' Something something
+#' @export
+
+eliteDB.connections <- function(){
+  # Måske skal der laves noget datarens - tjek fx for tomme navne og NA.
+  # Det ville nok også være sundt med nogle automatiske tests
+  # Det ser ud til at ikke alle affiliation ids kan findes i connections 
+  elite.db.connections            <- fromJSON("http://elitedb.ogtal.dk/exporter.php?type=connections")
+  elite.db.persons                <- fromJSON("http://elitedb.ogtal.dk/exporter.php?type=persons")
+  elite.db.affil                  <- fromJSON("http://elitedb.ogtal.dk/exporter.php?type=affiliations")
+  connections                     <- elite.db.connections[order(elite.db.connections$affiliation_id),]
+  persons                         <- elite.db.persons[order(elite.db.persons$id),]
+  affiliations                    <- elite.db.affil[order(elite.db.affil$id),]
+  affiliations$id.x               <- affiliations$id
+  
+  persons$person_id               <- persons$id
+  
+  # Data rens
+  persons                         <- persons[is.na(persons$fullname)==FALSE,]
+  
+  # Navne dupletter
+  dup.navn                       <- persons$fullname[duplicated(persons$fullname)]
+  dup.id                         <- persons$person_id[duplicated(persons$fullname)]
+  persons$fullname_dup           <- persons$fullname
+  persons$fullname_dup[duplicated(persons$fullname)]           <- paste(dup.navn, dup.id)
+  
+  # Merge
+  
+  connections                     <- merge(connections, persons, by = "person_id", all.x = T, sort = TRUE)
+  connections                     <- merge(connections, affiliations, by.x = "affiliationname", by.y = "name", all.x = T, sort = TRUE)
+  
+  # Merge
+  gender                          <- find.gender(navne = connections$fullname)
+  levels(gender)                  <- c("Women", "Undefined", "Men")
+  
+  
+  connections.den                 <- data.frame(NAME        = connections$fullname,
+                                                AFFILIATION = connections$affiliationname,
+                                                ROLE        = connections$rolename,
+                                                GENDER      = gender,
+                                                DESCRIPTION = connections$description.x,
+                                                SOURCE      = connections$affiliationsector,
+                                                BIQ_LINK    = connections$biq,
+                                                CVR         = connections$cvr,
+                                                TAGS        = connections$tagnames)
+  
+}
+

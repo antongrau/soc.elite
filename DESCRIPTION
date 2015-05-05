@@ -13,5 +13,7 @@ Depends:
     igraph,
     plyr,
     reshape2,
-    stringr
+    stringr,
+    jsonlite,
+    curl
 License: GPL-3
