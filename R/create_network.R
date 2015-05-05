@@ -239,7 +239,7 @@ eliteDB.connections <- function(){
                                                 TAGS        = connections$tagnames,
                                                 MODIFIED    = connections$modified_date.y,
                                                 CREATED     = connections$created_date,
-                                                ARCHIVED    = connections$archived_date
+                                                ARCHIVED    = connections$archived_date.x
                                                 )
   connections.den
 }
