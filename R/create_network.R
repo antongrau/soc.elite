@@ -238,7 +238,8 @@ eliteDB.connections <- function(){
                                                 CVR         = connections$cvr,
                                                 TAGS        = connections$tagnames,
                                                 MODIFIED    = connections$modified_date.y,
-                                                CREATED     = connections$created_date
+                                                CREATED     = connections$created_date,
+                                                ARCHIVED    = connections$archived_date
                                                 )
   connections.den
 }
