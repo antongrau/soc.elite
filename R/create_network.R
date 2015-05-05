@@ -236,7 +236,10 @@ eliteDB.connections <- function(){
                                                 SOURCE      = connections$affiliationsector,
                                                 BIQ_LINK    = connections$biq,
                                                 CVR         = connections$cvr,
-                                                TAGS        = connections$tagnames)
-  
+                                                TAGS        = connections$tagnames,
+                                                MODIFIED    = connections$modified_date.y,
+                                                CREATED     = connections$created_date
+                                                )
+  connections.den
 }
 
