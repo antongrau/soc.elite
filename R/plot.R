@@ -329,7 +329,7 @@ vertex.coord <- function(graph, layout=layout.fruchterman.reingold(graph)){
 #' @return a ggplot2 tile plot
 #' @export
 
-tile.plot <- function(adj.mat, max.color.value = median(adj.mat)*2){
+tile.plot <- function(adj.mat, max.color.value = median(adj.mat)*2, text.size = 3){
   mti                <- melt(adj.mat, as.is = TRUE) 
   colnames(mti)      <- c("rows", "cols", "value")
   mti$name           <- factor(mti$rows, levels = rownames(adj.mat), ordered = TRUE )
@@ -347,7 +347,7 @@ tile.plot <- function(adj.mat, max.color.value = median(adj.mat)*2){
   sc$ylab            <- ylab(NULL)
   sc$theme           <- theme(axis.ticks = element_blank(), panel.border = element_blank())
   
-  p                  <- ggplot(data = mti, aes(x = rows, y = cols, fill = color, label = value)) + geom_tile(color = "black") + geom_text(alpha = 1)
+  p                  <- ggplot(data = mti, aes(x = rows, y = cols, fill = color, label = value)) + geom_tile(color = "black") + geom_text(alpha = 1, size = text.size)
   p                  <- p + sc
   p
 }

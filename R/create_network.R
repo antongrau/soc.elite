@@ -228,7 +228,7 @@ eliteDB.connections <- function(){
   levels(gender)                  <- c("Women", "Undefined", "Men")
   
   
-  connections.den                 <- data.frame(NAME        = connections$fullname,
+  connections.den                 <- data.frame(NAME        = connections$fullname_dup,
                                                 AFFILIATION = connections$affiliationname,
                                                 ROLE        = connections$rolename,
                                                 GENDER      = gender,
@@ -239,7 +239,8 @@ eliteDB.connections <- function(){
                                                 TAGS        = connections$tagnames,
                                                 MODIFIED    = connections$modified_date.y,
                                                 CREATED     = connections$created_date,
-                                                ARCHIVED    = connections$archived_date.x
+                                                ARCHIVED    = connections$archived_date.x,
+                                                PERSON_ID   = connections$person_id
                                                 )
   connections.den
 }

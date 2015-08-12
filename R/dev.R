@@ -10,7 +10,9 @@
 #  library(RCurl)
 #  library(soc.elite)
 # data(den)
-# str(den)
-
-
-
+# # str(den)
+# 
+# install.packages("devtools")
+# library(devtools)
+# install_github("antongrau/soc.report")
+# data(den)
