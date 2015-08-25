@@ -4,7 +4,7 @@
 \alias{hvad}
 \title{Hvad er det?}
 \usage{
-hvad(affil, den = "den", ignore.case = TRUE, ...)
+hvad(affil, den = "den", ignore.case = TRUE, tags = FALSE, ...)
 }
 \arguments{
 \item{affil}{a character string with the name of one or several affiliations}

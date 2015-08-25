@@ -486,14 +486,15 @@ who  <-  function(net, name=NULL, relation.matrix=rel, vertex=NULL){
 #' @return A matrix with names and affiliation
 #' @export
 
-hvad          <- function(affil, den = "den", ignore.case = TRUE, ...){
+hvad          <- function(affil, den = "den", ignore.case = TRUE, tags = FALSE, ...){
   
   if (identical(den, "den")) data(den, envir = environment())
 
   pattern     <- paste(affil, collapse = "|")
   found       <- grep(pattern, den$AFFILIATION, ignore.case = ignore.case, ...)
   den.found   <- den[found,]
-  out         <- data.frame(Name = den.found$NAME, Affiliation = den.found$AFFILIATION, Role = den.found$ROLE, TAGS = den.found$TAGS)
+  out         <- data.frame(Name = den.found$NAME, Affiliation = den.found$AFFILIATION, Role = den.found$ROLE)
+  if(identical(tags, TRUE)) out         <- data.frame(out, TAGS = den.found$TAGS)
   out         <- sapply(out, as.character)
   out[is.na(out)] <- ""
   noquote(out)
@@ -520,8 +521,8 @@ hvem          <- function(name, den = "den", only.affiliations = TRUE, ignore.ca
     found.names <- unique(as.character(den$NAME[found]))
     found.affil <- den$AFFILIATION[found]
     den.found   <- den[den$AFFILIATION %in% found.affil,]
-    out         <- data.frame(Name = den.found$NAME, Affiliation = den.found$AFFILIATION, Role = den.found$ROLE, TAGS = den.found$TAGS)
-      
+    out         <- data.frame(Name = den.found$NAME, Affiliation = den.found$AFFILIATION, Role = den.found$ROLE)
+    if(identical(tags, TRUE)) out         <- data.frame(out, TAGS = den.found$TAGS)
     if(identical(only.affiliations, TRUE)){
       out <- out[out$Name %in% found.names,]
       out <- out[duplicated(data.frame(out$Name, out$Affiliation)) == FALSE,]

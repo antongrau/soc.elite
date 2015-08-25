@@ -104,9 +104,9 @@ if(res == "relations"){
 
 show.all.tags   <- function(den){
   tags                <- as.character(den$TAGS)
-  tags.positions      <- table(unlist(strsplit(tags, ", ")))
+  tags.positions      <- table(unlist(strsplit(tags, ",")))
   tags.affiliations   <- tags[duplicated(den$AFFILIATION) == FALSE]
-  tags.affiliations   <- table(unlist(strsplit(tags.affiliations, ", ")))
+  tags.affiliations   <- table(unlist(strsplit(tags.affiliations, ",")))
   cbind(Positions = tags.positions, Affiliations = tags.affiliations)
 }
 
