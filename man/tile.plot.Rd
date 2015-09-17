@@ -5,7 +5,8 @@
 \title{Tile.plot
 Plots a matrix as tile with color according to intensity}
 \usage{
-tile.plot(adj.mat, max.color.value = median(adj.mat) * 2, text.size = 3)
+tile.plot(adj.mat, max.color.value = 0.8, text.size = 3,
+  brewer.set = "Set1")
 }
 \arguments{
 \item{adj.mat}{is the input matrix, with named rows and columns and numerical cells}
@@ -16,5 +17,12 @@ a ggplot2 tile plot
 \description{
 Tile.plot
 Plots a matrix as tile with color according to intensity
+}
+\examples{
+data(pe13)
+mat                  <- data.frame(degree = pe13$Degree...1, reach = pe13$Reach, memberships = pe13$Memberships)
+rownames(mat)        <- as.character(pe13$Name)
+adj.mat              <- t(as.matrix(mat[1:20,]))
+tile.plot(adj.mat)
 }
 

@@ -328,26 +328,36 @@ vertex.coord <- function(graph, layout=layout.fruchterman.reingold(graph)){
 #' @param adj.mat is the input matrix, with named rows and columns and numerical cells
 #' @return a ggplot2 tile plot
 #' @export
+#' @examples
+#' data(pe13)
+#' mat                  <- data.frame(degree = pe13$Degree...1, reach = pe13$Reach, memberships = pe13$Memberships)
+#' rownames(mat)        <- as.character(pe13$Name)
+#' adj.mat              <- t(as.matrix(mat[1:20,]))
+#' tile.plot(adj.mat)
 
-tile.plot <- function(adj.mat, max.color.value = median(adj.mat)*2, text.size = 3){
-  mti                <- melt(adj.mat, as.is = TRUE) 
+tile.plot <- function(adj.mat, max.color.value = 0.8, text.size = 3, brewer.set = "Set1"){
+  mti                <- melt(adj.mat, as.is = TRUE)
   colnames(mti)      <- c("rows", "cols", "value")
   mti$name           <- factor(mti$rows, levels = rownames(adj.mat), ordered = TRUE )
   mti$rows           <- factor(mti$rows, levels = rownames(adj.mat), ordered = TRUE )
   mti$cols           <- factor(mti$cols, levels = colnames(adj.mat), ordered = TRUE )
   mti$color          <- mti$value
+  mti                <- mti[order(mti$rows),]
+  mti$color          <- unlist(lapply(split(mti$color, f = mti$rows), FUN = function(x) x/max(x, na.rm = TRUE)))
   mti$color[mti$color == 0] <- NA
-  mti$color[mti$color > max.color.value]  <- max.color.value
+  mti$color[mti$color > max.color.value]  <- max.color.value 
   
   sc                 <- list()
   sc$theme_bw        <- theme_bw()
-  sc$fill            <- scale_fill_continuous(high = "#b2182b", low = "#fddbc7", na.value = "white", guide = "none")
+ # sc$fill            <- scale_fill_continuous(high = "#b2182b", low = "#fddbc7", na.value = "white", guide = "none")
+  sc$alpha           <- scale_alpha_continuous(range = c(0.2, 1), guide = "none", na.value = 0)
+  sc$fill            <- scale_fill_manual(values = brewer.pal(n = nlevels(mti$rows), brewer.set), na.value = "white", guide = "none") 
   sc$axis.angle      <- theme(axis.text.x = element_text(size = 11, angle = 90, hjust = 1, color = "black"), axis.text.y = element_text(size = 11, color = "black"))
   sc$xlab            <- xlab(NULL)
   sc$ylab            <- ylab(NULL)
   sc$theme           <- theme(axis.ticks = element_blank(), panel.border = element_blank())
   
-  p                  <- ggplot(data = mti, aes(x = rows, y = cols, fill = color, label = value)) + geom_tile(color = "black") + geom_text(alpha = 1, size = text.size)
+  p                  <- ggplot(data = mti, aes(x = rows, y = cols, fill = rows, label = value, alpha = color)) + geom_tile(color = "black") + geom_text(alpha = 1, size = text.size)
   p                  <- p + sc
   p
 }

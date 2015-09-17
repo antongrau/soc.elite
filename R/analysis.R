@@ -765,3 +765,26 @@ do.you.know <- function(graph, you, people, how.well = 1){
   names(score) <- you
   score
 }
+
+edge.neighborhood  <- function(graph){
+  el               <- get.edgelist(graph)
+  edge.neighbors   <- apply(el, 1, neighbors, graph = graph)
+  sapply(edge.neighbors, length)
+}
+
+edge.neighborhood.intersection <- function(graph){
+  vs                     <- V(graph)
+  el                     <- E(graph)
+  connections            <- lapply(vs, neighbors, graph = graph)
+  
+  edge.overlap           <- function(el.row, connections){
+  edge.connections       <- connections[ends(graph, el.row, names = FALSE)]
+  length(do.call("intersection", edge.connections))
+  }
+  sapply(el, edge.overlap, connections = connections)
+}
+
+
+# en          <- edge.neighborhood.intersection(graph)
+# dist.plot(en)
+# graph.plot(graph, edge.color = en, edge.alpha = en) + scale_color_gradient(high = "darkblue", low = "papayawhip")

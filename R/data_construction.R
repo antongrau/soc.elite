@@ -126,7 +126,6 @@ NULL
 
 ###########################################################################
 # Power elite 2013 [pe13]
-
 # ind             <- read.csv("~/My Dropbox/Elite/Data/Data/Individuals_elite.csv", sep = "|", stringsAsFactors = FALSE, encoding = "UTF-8", dec = ".", na.strings = c("", NA))
 # load("~/My Dropbox/R/hoved/saved_results")
 # 
@@ -157,8 +156,8 @@ NULL
 #   "Science and education: Other scientists", 
 #   "Science and education: Education",
 #   
-#   "Culture and Law: Culture and charities" , 
-#   "Culture and Law: Law"
+#   "Culture and law: Culture and charities" , 
+#   "Culture and law: Law"
 # )
 # 
 # ind$Sector_order            <- factor(ind$Sector_order, levels = oo)
@@ -166,6 +165,7 @@ NULL
 # # Rownames
 # rownames(ind) <- ind$Name
 # 
+# net.elite <- upgrade_graph(net.elite)
 # 
 # # Save
 # pe13          <- ind

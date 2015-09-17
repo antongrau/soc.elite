@@ -9,6 +9,9 @@ show.all.tags(den)
 \arguments{
 \item{den}{a affiliation edgelist}
 }
+\value{
+a matrix with all tags and their frequencies
+}
 \description{
 Displays a matrix with all the tags in den.
 }

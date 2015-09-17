@@ -35,21 +35,22 @@ two.mode <- function(rel, weighted = TRUE, directed = FALSE, ... ){
 #' @export
 
 largest.component <- function(graph, cut.off = 1){
+  is.elite.network    <- inherits(graph, "elite.network")
+  original.names      <- V(graph)$name
   
-  original.names <- V(graph)$name
-  
-  ind           <- vector()
+  ind                 <- vector()
   if(inherits(graph, "elite.network")){
-    ind           <- c(ind, which(V(graph)$weighted.memberships <= cut.off))
-    graph           <- graph - ind
+    ind               <- c(ind, which(V(graph)$weighted.memberships <= cut.off))
+    graph             <- graph - ind
   }
   
-  cl            <- clusters(graph)
-  ind           <- which(cl$membership != which.max(cl$csize))
+  cl                  <- clusters(graph)
+  ind                 <- which(cl$membership != which.max(cl$csize))
   
-  ind           <- unique(ind)
-  graph.com       <- graph - ind
+  ind                 <- unique(ind)
+  graph.com           <- graph - ind
   graph.com$removed.vertex  <- original.names %in% V(graph.com)$name
+  if(is.elite.network)  class(graph.com)    <- c("igraph", "elite.network")
   graph.com
 }
 
@@ -97,6 +98,7 @@ if(res == "relations"){
 #' Displays a matrix with all the tags in den.
 #' 
 #' @param den a affiliation edgelist
+#' @return a matrix with all tags and their frequencies
 #' @export
 #' @examples
 #' data(den)
@@ -104,13 +106,44 @@ if(res == "relations"){
 
 show.all.tags   <- function(den){
   tags                <- as.character(den$TAGS)
-  tags.positions      <- table(unlist(strsplit(tags, ",")))
+  tags.split          <- trimws(unlist(strsplit(tags, ",")))
+  tags.positions      <- table(tags.split)
   tags.affiliations   <- tags[duplicated(den$AFFILIATION) == FALSE]
-  tags.affiliations   <- table(unlist(strsplit(tags.affiliations, ",")))
+  tags.affiliations   <- table(trimws(unlist(strsplit(tags.affiliations, ","))))
   cbind(Positions = tags.positions, Affiliations = tags.affiliations)
 }
 
 
+
+#' A vector of members in an affiliation
+#'
+#' @param x a character vector with names of affiliations
+#' @param den 
+#'
+#' @return a vector
+#' @export
+member.vector <- function(x, den){
+  den.x       <- droplevels(den[which(den$AFFILIATION %in% x),])
+  l.medlem    <- lapply(x, function(x, den.x) as.character(den.x$NAME)[den.x$AFFILIATION %in% x], den.x)
+  paste.names <- unlist(lapply(l.medlem, paste, collapse = " * "))
+  paste.names
+}
+
+
+#' Create a vector of tags on the basis of a affiliations
+#'
+#' @param x a character vector of affiliation names
+#' @param den 
+#'
+#' @return a vector of tags
+#' @export
+
+tag.vector    <- function(x, den){
+  den.x       <- droplevels(den[which(den$AFFILIATION %in% x),])
+  den.x       <- droplevels(den.x[duplicated(den.x$AFFILIATION) == FALSE,])
+  den.x       <- den.x[match(den.x$AFFILIATION, x),]
+  as.character(den.x$TAGS)
+}
 
 
 ##########################################################################################
@@ -242,6 +275,67 @@ eliteDB.connections <- function(){
                                                 ARCHIVED    = connections$archived_date.x,
                                                 PERSON_ID   = connections$person_id
                                                 )
+  connections.den
+}
+
+
+#' Create a den object from the elite cvr database
+#' 
+#' Something something
+#' @export
+
+cvrDB.connections <- function(){
+  # Affiliations matricen kan ikke komme ud.
+  
+  elite.db.connections            <- fromJSON("http://elitedb.ogtal.dk/exporter.php?type=connections&database=cvr")
+  elite.db.persons                <- fromJSON("http://elitedb.ogtal.dk/exporter.php?type=persons&database=cvr")
+  elite.db.affil                  <- fromJSON("http://elitedb.ogtal.dk/exporter.php?type=affiliations&database=cvr")
+  connections                     <- elite.db.connections[order(elite.db.connections$cvr),]
+  persons                         <- elite.db.persons[order(elite.db.persons$enhedsnummer),]
+  affiliations                    <- elite.db.affil[order(elite.db.affil$cvr),]
+  affiliations$id.x               <- affiliations$cvr
+  
+  persons$person_id               <- persons$enhedsnummer
+  connections$person_id           <- connections$enhedsnummer
+  
+  
+  # Navne dupletter
+  dup.navn                       <- persons$fullname[duplicated(persons$fullname)]
+  dup.id                         <- persons$person_id[duplicated(persons$fullname)]
+  persons$fullname_dup           <- persons$fullname
+  persons$fullname_dup[duplicated(persons$fullname)]           <- paste(dup.navn, dup.id)
+  
+  persons$gender                          <- find.gender(navne = persons$fullname_dup)
+  levels(persons$gender)                  <- c("Women", "Undefined", "Men")
+  
+  # Merge
+  connections                      <- merge(connections, persons, by = "person_id", all.x = T, sort = TRUE)
+  connections                      <- merge(connections, affiliations, by.x = "cvr", by.y = "cvr", all.x = T, sort = TRUE)
+  head(connections, 100)
+  # Merge
+    connections.den                 <- data.frame(NAME        = connections$fullname_dup,
+                                                AFFILIATION = connections$affiliationname,
+                                                ROLE        = connections$role,
+                                                GENDER      = connections$gender,
+                                                SOURCE      = "CVR_udtræk",
+                                                CVR         = connections$cvr,
+                                                TAGS        = connections$hovedbranchenavn,
+                                                MODIFIED    = NA, #connections$modified_date.y,
+                                                CREATED     = NA, #connections$created_date,
+                                                ARCHIVED    = NA, #connections$archived_date.x,
+                                                PERSON_ID   = NA, #connections$person_id,
+                                                START_DATE  = connections$startdate,
+                                                END_DATE    = connections$enddate,
+                                                PERSON_ADRESSE = connections$adresse.x,
+                                                PERSON_POSTNR  = connections$postnummer.x,
+                                                PERSON_KOMMUNE = connections$kommune.x,
+                                                PERSON_CVR  = connections$enhedsnummer.x,
+                                                VIRK_START  = connections$livsforloebstart,
+                                                VIRK_SLUT   = connections$livsforloebslut,
+                                                VIRK_KOMMUNE = connections$kommune.y,
+                                                VIRK_ADRESSE_POSTNR = connections$postnummer.y,
+                                                VIRK_ADRESSE = connections$adresse.y
+  )
   connections.den
 }
 
