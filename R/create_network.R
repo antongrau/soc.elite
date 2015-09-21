@@ -308,6 +308,8 @@ cvrDB.connections <- function(){
   persons$gender                          <- find.gender(navne = persons$fullname_dup)
   levels(persons$gender)                  <- c("Women", "Undefined", "Men")
   
+  
+  
   # Merge
   connections                      <- merge(connections, persons, by = "person_id", all.x = T, sort = TRUE)
   connections                      <- merge(connections, affiliations, by.x = "cvr", by.y = "cvr", all.x = T, sort = TRUE)
@@ -315,7 +317,7 @@ cvrDB.connections <- function(){
   # Merge
     connections.den                 <- data.frame(NAME        = connections$fullname_dup,
                                                 AFFILIATION = connections$affiliationname,
-                                                ROLE        = connections$role,
+                                                ROLE        = as.factor(connections$role),
                                                 GENDER      = connections$gender,
                                                 SOURCE      = "CVR_udtræk",
                                                 CVR         = connections$cvr,
@@ -324,17 +326,18 @@ cvrDB.connections <- function(){
                                                 CREATED     = NA, #connections$created_date,
                                                 ARCHIVED    = NA, #connections$archived_date.x,
                                                 PERSON_ID   = NA, #connections$person_id,
-                                                START_DATE  = connections$startdate,
-                                                END_DATE    = connections$enddate,
+                                                START_DATE  = as.Date(connections$startdate, "%Y-%m-%d"),
+                                                END_DATE    = as.Date(connections$enddate, "%Y-%m-%d"),
                                                 PERSON_ADRESSE = connections$adresse.x,
                                                 PERSON_POSTNR  = connections$postnummer.x,
-                                                PERSON_KOMMUNE = connections$kommune.x,
+                                                PERSON_KOMMUNE = as.factor(connections$kommune.x),
                                                 PERSON_CVR  = connections$enhedsnummer.x,
-                                                VIRK_START  = connections$livsforloebstart,
-                                                VIRK_SLUT   = connections$livsforloebslut,
-                                                VIRK_KOMMUNE = connections$kommune.y,
+                                                VIRK_START  = as.Date(connections$livsforloebstart, "%Y-%m-%d"),
+                                                VIRK_SLUT   = as.Date(connections$livsforloebslut, "%Y-%m-%d"),
+                                                VIRK_KOMMUNE = as.factor(connections$kommune.y),
                                                 VIRK_ADRESSE_POSTNR = connections$postnummer.y,
-                                                VIRK_ADRESSE = connections$adresse.y
+                                                VIRK_ADRESSE = connections$adresse.y,
+                                                stringsAsFactors = FALSE
   )
   connections.den
 }
