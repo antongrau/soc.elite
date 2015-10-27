@@ -341,6 +341,8 @@ cvrDB.connections <- function(pass = ""){
                                                 VIRK_KOMMUNE = as.factor(connections$kommune.y),
                                                 VIRK_ADRESSE_POSTNR = connections$postnummer.y,
                                                 VIRK_ADRESSE = connections$adresse.y,
+                                                VIRK_BRANCHE = connections$hovedbranchenavn,
+                                                VIRK_BRANCHEKODE = connections$hovedbranchekode,
                                                 stringsAsFactors = FALSE
   )
   connections.den
