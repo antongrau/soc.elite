@@ -15,6 +15,5 @@ Depends:
     reshape2,
     stringr,
     jsonlite,
-    curl,
-    lubridate
+    curl
 License: GPL-3

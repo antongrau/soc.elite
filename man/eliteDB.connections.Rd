@@ -4,7 +4,7 @@
 \alias{eliteDB.connections}
 \title{Create a den object from the elite database}
 \usage{
-eliteDB.connections()
+eliteDB.connections(pass = "")
 }
 \description{
 Something something

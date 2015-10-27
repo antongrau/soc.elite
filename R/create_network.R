@@ -331,6 +331,7 @@ cvrDB.connections <- function(pass = ""){
                                                 PERSON_ID   = NA, #connections$person_id,
                                                 START_DATE  = as.Date(connections$startdate, "%Y-%m-%d"),
                                                 END_DATE    = as.Date(connections$enddate, "%Y-%m-%d"),
+                                                VALGFORM    = connections$valgform,
                                                 PERSON_ADRESSE = connections$adresse.x,
                                                 PERSON_POSTNR  = connections$postnummer.x,
                                                 PERSON_KOMMUNE = as.factor(connections$kommune.x),

@@ -6,5 +6,4 @@
 #' @import igraph
 #' @import plyr
 #' @import stringr
-#' @import lubridate
 NULL
