@@ -582,6 +582,7 @@ find.beskrivelse <- function(rel, soegeord, ignore.case=TRUE, ...){
 
 find.gender <- function(navne){
   names.gender <- soc.elite:::names.gender
+  Encoding(names.gender$Navn) <- "UTF-8" 
   n.list <- strsplit(navne, " ")
   fornavne <- vector(length=length(navne))
   for (i in 1:length(fornavne)){
