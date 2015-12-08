@@ -129,6 +129,38 @@ member.vector <- function(x, den){
   paste.names
 }
 
+#' A vector of memberships for each individual
+#'
+#' @param x a character vector with names of individuals
+#' @param den 
+#'
+#' @return a vector
+#' @export
+membership.vector <- function(x, den){
+  den.x           <- droplevels(den[which(den$NAME %in% x),])
+  l.medlemskab    <- lapply(x, function(x, den.x) unique(as.character(den.x$AFFILIATION)[den.x$NAME %in% x]), den.x)
+  paste.names     <- unlist(lapply(l.medlemskab, paste, collapse = " * "))
+  paste.names
+}
+
+#' A vector of descriptions for each individual
+#'
+#' @param x a character vector with names of individuals
+#' @param den 
+#'
+#' @return a vector
+#' @export
+
+description.vector <- function(x, den){
+  den.x           <- droplevels(den[which(den$NAME %in% x),])
+  beskriv         <- function(x, den.x) {
+  dat             <- data.frame(affil = den.x$AFFILIATION, description = den.x$DESCRIPTION)[den.x$NAME %in% x,]
+  dat             <- dat[duplicated(dat$affil) == FALSE,]
+  paste(dat$affil, ":",  dat$description, collapse = " * ")
+  }
+  sapply(x, beskriv, den.x = den.x)
+}
+
 
 #' Create a vector of tags on the basis of a affiliations
 #'
@@ -143,6 +175,12 @@ tag.vector    <- function(x, den){
   den.x       <- droplevels(den.x[duplicated(den.x$AFFILIATION) == FALSE,])
   den.x       <- den.x[match(den.x$AFFILIATION, x),]
   as.character(den.x$TAGS)
+}
+
+neighbors.vector <- function(x, graph){
+  
+  
+  
 }
 
 
@@ -261,7 +299,6 @@ eliteDB.connections <- function(pass = ""){
   # Merge
   gender                          <- find.gender(navne = connections$fullname)
   levels(gender)                  <- c("Women", "Undefined", "Men")
-  
   
   connections.den                 <- data.frame(NAME        = connections$fullname_dup,
                                                 AFFILIATION = connections$affiliationname,
