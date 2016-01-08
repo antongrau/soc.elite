@@ -41,7 +41,7 @@
 #                         text = FALSE, text.size = 3, text.color = "black", text.alpha = 1, legend = "side", text.vjust = 1.5, midpoints = FALSE,
 #                         midpoint.arrow = arrow(angle = 20, length = unit(0.33, "cm"), ends = "last", type = "closed"), edge.text = FALSE, edge.text.size = 3, edge.text.alpha = 0.9){
 #   
-#   layout                  <- norm_coords(layout, xmin = 0, xmax = 1, ymin = 0, ymax = 1)
+#   layout                  <- norm_coords(layout, xmin = 1, xmax = 100, ymin = 1, ymax = 100)
 #   vertex.coords           <- as.data.frame(vertex.coord(graph, layout))
 #   
 #   vertex.l                <- list(color=vertex.color, fill=vertex.fill, shape=vertex.shape, size=vertex.size, alpha=vertex.alpha)
@@ -66,6 +66,7 @@
 #     
 #     if(identical(edge.order, FALSE) == FALSE){
 #       edge.aes              <- as.list(as.data.frame(edge.aes)[order(edge.order),])
+#       # Vi sorterer ikke edge.coords og den bruges længere nede
 #     } 
 #   }
 #   
@@ -82,11 +83,11 @@
 #     # x3 = x1 + (1/l) * (x2 - x1)
 #     # y3 = y1 + (1/l) * (y2 - y1)
 #     
-#     a                            <- sqrt((edge.coords$slut.x - midpoint.aes$x)^2)
-#     b                            <- sqrt((edge.coords$slut.y - midpoint.aes$y)^2)
-#     L                            <- (a + b)^2
-#     midpoint.aes$xend            <- midpoint.aes$x + (L) * (edge.coords$slut.x - midpoint.aes$x)
-#     midpoint.aes$yend            <- midpoint.aes$y + (L) * (edge.coords$slut.y - midpoint.aes$y)
+#     a                            <- (edge.coords$slut.x - midpoint.aes$x)^2
+#     b                            <- (edge.coords$slut.y - midpoint.aes$y)^2
+#     L                            <- sqrt(a + b)
+#     midpoint.aes$xend            <- midpoint.aes$x + (1/L) * (edge.coords$slut.x - midpoint.aes$x)
+#     midpoint.aes$yend            <- midpoint.aes$y + (1/L) * (edge.coords$slut.y - midpoint.aes$y)
 #     midpoint.aes$group           <- paste(midpoint.aes$x, midpoint.aes$y)
 #     
 #   }
