@@ -7,4 +7,6 @@
 #' @import plyr
 #' @import stringr
 #' @import grid
+#' @import shiny
+#' @import qlcMatrix
 NULL

@@ -16,5 +16,9 @@ Depends:
     stringr,
     jsonlite,
     curl,
-    grid
+    grid,
+    shiny
+Imports:
+    qlcMatrix
 License: GPL-3
+RoxygenNote: 5.0.1

@@ -35,7 +35,9 @@ find.core <- function(sp, reach = 2.1){
 #' @export
 
 find.core.net <- function(net, reach = 2.1){
-  sp       <- shortest.paths(net)
+  graph    <- net
+  graph    <- delete.edges(graph, which(E(graph)$weight > reach))
+  sp       <- shortest.paths(graph)
   sp       <- (sp <= reach) * 1
   net.sp   <- graph.adjacency(sp, mode="undirected", diag=FALSE, weighted=TRUE)
   core     <- graph.coreness(net.sp)
@@ -51,16 +53,21 @@ find.core.net <- function(net, reach = 2.1){
 #' @export
 
 elite.network     <- function(rel.all = rel.all, sigma = 14){
+  # Måske skal vi have et argument der tillader at man smider svage forbindelser?
   
   ## Vægt baseret på størrelse af org
   netmat              <- droplevels(data.frame(rel.all$NAME, rel.all$AFFILIATION))
   colnames(netmat)    <- c("navn", "org")
-  tabnet              <- Matrix(table(netmat), sparse=TRUE)
+  #tabnet              <- Matrix(table(netmat), sparse=TRUE)
+  tabnet              <- xtabs(formula = ~., data = netmat, sparse = TRUE)
+  
   org.medlemmer       <- colSums(tabnet)
   medlemskaber        <- rowSums(tabnet)
   
   # Occassions weight
-  col.max             <- apply(tabnet, 2, max)
+  col.max             <- as.numeric(qlcMatrix::colMax(tabnet))
+  #col.max             <- apply(tabnet, 2, max)
+  
   tabweight           <- t(t(tabnet) * (1 / col.max))
   dimnames(tabweight) <- dimnames(tabnet)
   

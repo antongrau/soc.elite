@@ -326,6 +326,7 @@ eliteDB.connections <- function(pass = ""){
 cvrDB.connections <- function(pass = ""){
   # Affiliations matricen kan ikke komme ud.
   pass_string                     <- paste0("&password=", pass)
+  
   elite.db.connections            <- fromJSON(paste0("http://elitedb.ogtal.dk/exporter.php?type=connections&database=cvr", pass_string))
   elite.db.persons                <- fromJSON(paste0("http://elitedb.ogtal.dk/exporter.php?type=persons&database=cvr", pass_string))
   elite.db.affil                  <- fromJSON(paste0("http://elitedb.ogtal.dk/exporter.php?type=affiliations&database=cvr", pass_string))

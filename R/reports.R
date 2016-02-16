@@ -54,6 +54,8 @@ ego.two.mode <- function(name, den = den, n = Inf, text = "affil", member.of = p
     text[type == "Individual"] <- NA
   }
   
+  E(net.two)$weight <- E(net.two)$e.w
+  
   p <- graph.plot.twomode(net.two, text = text, vertex.fill = member.of.TF, vertex.size = V(net.two)$ego.dist, edge.color = "black", edge.alpha = E(net.two)$e.w, vertex.shape = type, edge.size = 0.45, ...)
   p <- p + scale_fill_manual(values = c("white", "black"), guide = "none") + scale_shape_manual(values = c(21, -0x25C9, 23 ), guide = "none") + scale_alpha_continuous(range = c(0.08, 0.4), guide ="none") + scale_size_continuous(range = c(2, 4), guide = "none")
   p + ggtitle(name)
@@ -87,3 +89,47 @@ ego.network      <- function(name, den, n = Inf){
   net.elite
 }
 
+
+
+#' A report of the first neighborhood of an affiliation
+#' @param name a single or several affilation names
+#' @param den an affiliation edge list in the \link{den} format
+#' @param text if "affil" only affiliations are given labels
+#' @param member.of is a set of names of individuals or affiliations that are used for determining the fill of the vertices.
+#' @param ... all other arguments are passed on to \link{graph.plot.twomode}
+#' @return a ggplot ego.plot
+#' @export
+
+ego.two.mode.affil <- function(name, den = den, text = "affil", member.of = pe13$Name, ...){
+  
+  aff          <- den$AFFILIATION %in% name
+  
+  stopifnot("Wrong name" = any(aff))
+  inds         <- as.character(den$NAME[aff])
+  rel.affil    <- den[den$NAME %in% inds,]  
+  
+  net.two      <- two.mode(rel.affil)
+  
+  type         <- V(net.two)$type
+  type[V(net.two)$name %in% name] <- "Ind"
+  type <- as.factor(type)
+  levels(type)    <- c("Individual", "Ego", "Affiliation")
+  
+  member.of.TF    <- V(net.two)$name %in% member.of
+  
+  aff <- which(type == "Affiliation")
+  
+  e.w <- E(net.two)$weight
+  E(net.two)$e.w <- e.w
+  
+  if(identical(text, "affil")){
+    text       <- V(net.two)$name
+    text[type == "Individual"] <- NA
+  }
+  
+  E(net.two)$weight <- E(net.two)$e.w
+  
+  p <- graph.plot.twomode(net.two, text = text, vertex.fill =  member.of.TF, vertex.size = degree(net.two), edge.color = "black", vertex.shape = type, edge.size = 0.45, ...)
+  p <- p + scale_fill_manual(values = c("white", "black", "black"), guide = "none") + scale_shape_manual(values = c(21, -0x25C9, 23 ), guide = "none") + scale_alpha_continuous(range = c(0.08, 0.4), guide ="none") + scale_size_continuous(range = c(2, 4), guide = "none")
+  p + ggtitle(name)
+}
