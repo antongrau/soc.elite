@@ -4,16 +4,10 @@
 \alias{two.mode}
 \title{Create a two-mode network from an affiliation list}
 \usage{
-two.mode(rel, weighted = TRUE, directed = FALSE, ...)
+two.mode(den)
 }
 \arguments{
-\item{rel}{an affiliation list}
-
-\item{weighted}{If TRUE the graph is weighted}
-
-\item{directed}{If TRUE the graph is directed - does that even make sense?}
-
-\item{...}{further arguments are passed on to \link{graph.incidence}}
+\item{den}{an affiliation list}
 }
 \description{
 Create a two-mode network from an affiliation list

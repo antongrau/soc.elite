@@ -3,23 +3,15 @@
 
 #' Create a two-mode network from an affiliation list
 #' 
-#' @param rel an affiliation list
-#' @param weighted If TRUE the graph is weighted
-#' @param directed If TRUE the graph is directed - does that even make sense?
-#' @param ... further arguments are passed on to \link{graph.incidence}
+#' @param den an affiliation list
 #' @export
 
-two.mode <- function(rel, weighted = TRUE, directed = FALSE, ... ){
+two.mode <- function(den){
   
-  netmat           <- droplevels(data.frame(rel$NAME, rel$AFFILIATION))
-  
-  colnames(netmat) <- c("navn", "org")
-  
-  ### Nu laves netværksobjekterne
-  tabnet          <- table(netmat)
-  tabnet          <- as.matrix(tabnet)
-  
-  graph.incidence(tabnet, multiple = TRUE, weighted = weighted, directed = directed, ...)
+  edgelist         <- droplevels(data.frame(den$NAME, den$AFFILIATION))
+  graph            <- graph.data.frame(edgelist)
+  V(graph)$type    <- V(graph)$name %in% edgelist[,1]
+  graph
 }
 
 ###############################################
