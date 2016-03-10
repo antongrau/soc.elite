@@ -18,7 +18,6 @@ graph.explorer     <- function(graph, den, layout = layout_with_fr(graph, weight
         "Explore"
       ), 
       fluidRow(
-        column(1, actionButton("redraw", "Redraw")),
         column(11, plotOutput("graph.plot", click = "plot_click"))# Se hvad vi kan gøre ved størrelsen på plottet
         
       ),

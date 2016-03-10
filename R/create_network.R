@@ -10,7 +10,7 @@ two.mode <- function(den){
   
   edgelist         <- droplevels(data.frame(den$NAME, den$AFFILIATION))
   graph            <- graph.data.frame(edgelist)
-  V(graph)$type    <- V(graph)$name %in% edgelist[,1]
+  V(graph)$type    <- V(graph)$name %in% edgelist[,2]
   graph
 }
 
@@ -299,12 +299,13 @@ eliteDB.connections <- function(pass = ""){
                                                 DESCRIPTION = connections$description.x,
                                                 SOURCE      = connections$affiliationsector,
                                                 BIQ_LINK    = connections$biq,
-                                                CVR         = connections$cvr,
+                                                CVR         = as.numeric(connections$cvr),
                                                 TAGS        = connections$tagnames,
-                                                MODIFIED    = connections$modified_date.y,
-                                                CREATED     = connections$created_date,
-                                                ARCHIVED    = connections$archived_date.x,
-                                                PERSON_ID   = connections$person_id
+                                                MODIFIED    = as.Date(connections$modified_date.y, "%Y-%m-%d"),
+                                                CREATED     = as.Date(connections$created_date, "%Y-%m-%d"),
+                                                ARCHIVED    = as.Date(connections$archived_date.x, "%Y-%m-%d"),
+                                                PERSON_ID   = connections$person_id,
+                                                PERSON_CVR  = as.numeric(connections$cvrid)
                                                 )
   connections.den
 }

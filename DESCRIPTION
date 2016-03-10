@@ -12,6 +12,7 @@ Depends:
     ggplot2,
     igraph,
     plyr,
+    dplyr,
     reshape2,
     stringr,
     jsonlite,

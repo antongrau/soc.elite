@@ -83,7 +83,7 @@ elite.network     <- function(rel.all = rel.all, sigma = 14){
   
   # Adjacency matrix for individer
   tb                   <- Matrix(tb, sparse=TRUE)
-  adj.all              <- sqrt(tb) %*% sqrt(t(tb))
+  adj.all              <- sqrt(tb) %*% sqrt(t(tb)) # Her kan vi speede op med tcrossprod()
   
   antal.medlemskaber   <- diag(adj.all)
   
@@ -139,35 +139,32 @@ elite.network     <- function(rel.all = rel.all, sigma = 14){
 #' @return a elite network object
 #' @export
 
-elite.network.org     <- function(rel.all = rel.all, sigma = 14){
+elite.network.org     <- function(den = den, sigma = 14){
   
   ## Vægt baseret på størrelse af org
-  netmat              <- droplevels(data.frame(rel.all$NAME, rel.all$AFFILIATION))
-  colnames(netmat)    <- c("navn", "org")
-  tabnet              <- Matrix(table(netmat), sparse = TRUE)
-  
+  incidence              <- xtabs(formula = ~NAME + AFFILIATION, data = den, sparse = TRUE)
+
   # Occassions weight
-  col.max             <- apply(tabnet, 2, max)
-  tabnet              <- t(t(tabnet) * (1 / col.max))
-  dimnames(tabnet)    <- dimnames(tabnet)
+  col.max                <- as.numeric(qlcMatrix::colMax(incidence))
+  incidence              <- t(t(incidence) * (1 / col.max))
+  dimnames(incidence)    <- dimnames(incidence)
   
-  adj.org             <- t(tabnet) %*% tabnet
-  org.medlemmer       <- diag(adj.org)
+  adj.org                <- crossprod(incidence)
+  org.medlemmer          <- diag(adj.org)
   
   # Org size weight
-  org.weight           <- sqrt((sigma/org.medlemmer))
+  org.weight             <- sqrt((sigma/org.medlemmer))
   org.weight[org.weight > 1]      <- 1
-  names(org.weight)    <- colnames(tabnet)
+  names(org.weight)      <- colnames(incidence)
   
-  adj.org             <- adj.org * org.weight
-  net.org             <- graph.adjacency(adj.org, weighted = TRUE, diag = FALSE, mode = "directed")
-  V(net.org)$members  <- org.medlemmer
+  adj.org                <- adj.org * org.weight
+  net.org                <- graph.adjacency(adj.org, weighted = TRUE, diag = FALSE, mode = "directed")
+  V(net.org)$members     <- org.medlemmer
   V(net.org)$weighted.members <- diag(adj.org)
   
-  over                <- E(net.org)$weight > 1
+  over                   <- E(net.org)$weight > 1
   #E(net.org)$weight[over] <- log(E(net.org)$weight[over]) + 1
-  E(net.org)$weight   <- 1/E(net.org)$weight
-  
+  E(net.org)$weight      <- 1/E(net.org)$weight
   net.org
 }
 
@@ -588,26 +585,15 @@ find.beskrivelse <- function(rel, soegeord, ignore.case=TRUE, ...){
 #' @export
 
 find.gender <- function(navne){
-  names.gender <- soc.elite:::names.gender
+  names.gender    <- soc.elite:::names.gender[, c(1,5)]
   Encoding(names.gender$Navn) <- "UTF-8" 
-  n.list <- strsplit(navne, " ")
-  fornavne <- vector(length=length(navne))
-  for (i in 1:length(fornavne)){
-    fornavne[i] <- n.list[[i]][1]
-  }
-  fornavne <- toupper(fornavne)
-  
-  ng <- names.gender[names.gender$Navn %in% fornavne,]
-  
-  koen   <- vector(length=length(navne))
-  for (i in 1:length(navne)){
-    n <- fornavne[i]
-    koen.navn <- as.numeric(ng[match(n, ng$Navn),][5])
-    koen[i]     <- koen.navn
-  }
-  b <- c(0, 0.2, 0.8, 1)
-  kategori <- cut(koen, b, include.lowest=TRUE, labels=c("Women", "Binominal", "Men"))
-  return(kategori)
+  n.list          <- strsplit(navne, " ")
+  fornavne        <- sapply(n.list, head, 1)
+  fornavne        <- data.frame(Navn = I(toupper(fornavne)))
+  koen            <- dplyr::left_join(fornavne, names.gender, by = "Navn")
+  b               <- c(0, 0.2, 0.8, 1)
+  kategori        <- cut(koen[, 2], b, include.lowest=TRUE, labels=c("Women", "Binominal", "Men"))
+  kategori
 }
 
 #' Extract first names
@@ -660,14 +646,11 @@ inddel.postnummer <- function(x){
 #' @return a character vector
 #' @export
 
-variable.from.rel.org  <- function(rel, net, var){
-  
-  un.org.navn  <- rel$AFFILIATION[duplicated(rel$AFFILIATION) == FALSE]
-  un.var       <- var[duplicated(rel$AFFILIATION) == FALSE]
-  order.navn   <- order(un.org.navn)
-  
-  stopifnot(all.equal(V(net)$name, un.org.navn[order.navn]))
-  un.var[order.navn]
+variable.from.rel.org  <- function(den, graph){
+  d                    <- data.frame(AFFILIATION = I(V(graph)$name))
+  den$AFFILIATION      <- as.character(den$AFFILIATION)
+  den.uni              <- den[duplicated(den$AFFILIATION) == FALSE,]
+  left_join(d, den.uni, by = "AFFILIATION")
 }
 
 #' Vertex descriptives

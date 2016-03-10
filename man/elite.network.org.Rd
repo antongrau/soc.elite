@@ -4,12 +4,12 @@
 \alias{elite.network.org}
 \title{Elite network for affiliations}
 \usage{
-elite.network.org(rel.all = rel.all, sigma = 14)
+elite.network.org(den = den, sigma = 14)
 }
 \arguments{
-\item{rel.all}{an affiliation edge list in the\link{den} format.}
-
 \item{sigma}{the number of members in an affiliation above which all affiliations are weighted down}
+
+\item{rel.all}{an affiliation edge list in the\link{den} format.}
 }
 \value{
 a elite network object
