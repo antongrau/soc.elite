@@ -4,7 +4,7 @@
 \alias{variable.from.rel.org}
 \title{Create an organisation variable from relations matrix}
 \usage{
-variable.from.rel.org(rel, net, var)
+variable.from.rel.org(den, graph)
 }
 \arguments{
 \item{rel}{is a relations matrix - or a affiliation edge list}

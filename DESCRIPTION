@@ -18,6 +18,7 @@ Depends:
     jsonlite,
     curl,
     grid,
+    qlcMatrix,
     shiny
 Imports:
     qlcMatrix
