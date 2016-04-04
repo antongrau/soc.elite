@@ -35,7 +35,7 @@
 #'                             edge.color = "darkmagenta", edge.alpha = log(1/E(net.org)$weight))
 #' p             <- p + scale_fill_continuous(low = "white", high = "magenta") + scale_size_continuous(range = c(3, 10))
 #' p + scale_alpha_continuous(range = c(0,1))
-graph.plot  <- function(graph, layout = layout_with_fr(graph, weight = E(graph)$weight^2),
+graph.plot  <- function(graph, layout = layout_with_fr(graph, weight = E(graph)$weight^2, grid = "nogrid"),
                         vertex.color = "black", vertex.fill = "grey60", vertex.shape = 21, vertex.size = 3, vertex.alpha = 1,
                         edges = TRUE, edge.color = "darkblue", edge.alpha = E(graph)$weight, edge.size = 1, edge.line = "solid", edge.order = FALSE,
                         text = FALSE, text.size = 3, text.color = "black", text.alpha = 1, legend = "side", text.vjust = 1.5, midpoints = FALSE,
@@ -279,6 +279,8 @@ edge.coord <- function(graph, layout){
   
   graph.names       <- V(graph)$name
   el                <- data.frame(get.edgelist(graph))
+  
+  if(is.weighted(graph) == FALSE) E(graph)$weight <- rep(1, ecount(graph))
   
   el.X1.levels.x    <- levels(el$X1)
   el.X1.levels.y    <- levels(el$X1)

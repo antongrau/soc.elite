@@ -4,9 +4,9 @@
 \alias{graph.plot}
 \title{graph.plot - Plots a weighted graph, with weighted edges as a default}
 \usage{
-graph.plot(graph, layout = layout_with_fr(graph, weight = E(graph)$weight^2),
-  vertex.color = "black", vertex.fill = "grey60", vertex.shape = 21,
-  vertex.size = 3, vertex.alpha = 1, edges = TRUE,
+graph.plot(graph, layout = layout_with_fr(graph, weight = E(graph)$weight^2,
+  grid = "nogrid"), vertex.color = "black", vertex.fill = "grey60",
+  vertex.shape = 21, vertex.size = 3, vertex.alpha = 1, edges = TRUE,
   edge.color = "darkblue", edge.alpha = E(graph)$weight, edge.size = 1,
   edge.line = "solid", edge.order = FALSE, text = FALSE, text.size = 3,
   text.color = "black", text.alpha = 1, legend = "side",

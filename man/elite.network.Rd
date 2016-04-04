@@ -4,7 +4,7 @@
 \alias{elite.network}
 \title{Elite network}
 \usage{
-elite.network(rel.all = rel.all, sigma = 14)
+elite.network(rel.all = rel.all, sigma = 14, check.nested = TRUE)
 }
 \arguments{
 \item{rel.all}{an affiliation edge list, in the \link{den} format.}

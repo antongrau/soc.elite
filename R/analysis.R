@@ -52,7 +52,7 @@ find.core.net <- function(net, reach = 2.1){
 #' @return a elite network object
 #' @export
 
-elite.network     <- function(rel.all = rel.all, sigma = 14){
+elite.network     <- function(rel.all = rel.all, sigma = 14, check.nested = TRUE){
   # Måske skal vi have et argument der tillader at man smider svage forbindelser?
   
   ## Vægt baseret på størrelse af org
@@ -88,6 +88,8 @@ elite.network     <- function(rel.all = rel.all, sigma = 14){
   antal.medlemskaber   <- diag(adj.all)
   
   ## Indlejrede
+  if(identical(check.nested, TRUE)){
+  
   org.1a               <- nested$Nested.org
   org.2a               <- nested$Nested.in
   org.navne            <- colnames(tb)
@@ -113,7 +115,7 @@ elite.network     <- function(rel.all = rel.all, sigma = 14){
       adj.all[ret.mem, ret.mem] <- adj.all[ret.mem, ret.mem] - ret.vaegt.2
     }
   }
-  
+  }
   ## Netværksobjektet skabes
   net.all             <- graph.adjacency(adj.all, weighted = TRUE, diag = FALSE, mode = "undirected")
   
