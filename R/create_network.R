@@ -7,10 +7,11 @@
 #' @export
 
 two.mode <- function(den){
-  
   edgelist         <- droplevels(data.frame(den$NAME, den$AFFILIATION))
   graph            <- graph.data.frame(edgelist)
   V(graph)$type    <- V(graph)$name %in% edgelist[,2]
+  per              <- invPerm(order(V(graph)$type, V(graph)$name))
+  graph            <- permute.vertices(graph, per)
   graph
 }
 
@@ -258,6 +259,7 @@ adj.org <- function(rel){
 #' Something something
 #' @export
 
+
 eliteDB.connections <- function(pass = ""){
   # Måske skal der laves noget datarens - tjek fx for tomme navne og NA.
   # Det ville nok også være sundt med nogle automatiske tests
@@ -305,7 +307,8 @@ eliteDB.connections <- function(pass = ""){
                                                 CREATED     = as.Date(connections$created_date, "%Y-%m-%d"),
                                                 ARCHIVED    = as.Date(connections$archived_date.x, "%Y-%m-%d"),
                                                 PERSON_ID   = connections$person_id,
-                                                PERSON_CVR  = as.numeric(connections$cvrid)
+                                                PERSON_CVR  = as.numeric(connections$cvrid),
+                                                DESCRIPTION_AFFILIATION = connections$description
                                                 )
   connections.den
 }
@@ -316,13 +319,13 @@ eliteDB.connections <- function(pass = ""){
 #' Something something
 #' @export
 
-cvrDB.connections <- function(pass = ""){
+cvrDB.connections <- function(pass = "", database = "cvr"){
   # Affiliations matricen kan ikke komme ud.
   pass_string                     <- paste0("&password=", pass)
   
-  elite.db.connections            <- fromJSON(paste0("http://elitedb.ogtal.dk/exporter.php?type=connections&database=cvr", pass_string))
-  elite.db.persons                <- fromJSON(paste0("http://elitedb.ogtal.dk/exporter.php?type=persons&database=cvr", pass_string))
-  elite.db.affil                  <- fromJSON(paste0("http://elitedb.ogtal.dk/exporter.php?type=affiliations&database=cvr", pass_string))
+  elite.db.connections            <- fromJSON(paste0("http://elitedb.ogtal.dk/exporter.php?type=connections&database=", database, pass_string))
+  elite.db.persons                <- fromJSON(paste0("http://elitedb.ogtal.dk/exporter.php?type=persons&database=", database, pass_string))
+  elite.db.affil                  <- fromJSON(paste0("http://elitedb.ogtal.dk/exporter.php?type=affiliations&database=", database, pass_string))
   
   connections                     <- elite.db.connections[order(elite.db.connections$cvr),]
   persons                         <- elite.db.persons[order(elite.db.persons$enhedsnummer),]

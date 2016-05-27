@@ -4,7 +4,7 @@
 \alias{cvrDB.connections}
 \title{Create a den object from the elite cvr database}
 \usage{
-cvrDB.connections(pass = "")
+cvrDB.connections(pass = "", database = "cvr")
 }
 \description{
 Something something

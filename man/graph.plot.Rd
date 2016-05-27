@@ -6,13 +6,14 @@
 \usage{
 graph.plot(graph, layout = layout_with_fr(graph, weight = E(graph)$weight^2,
   grid = "nogrid"), vertex.color = "black", vertex.fill = "grey60",
-  vertex.shape = 21, vertex.size = 3, vertex.alpha = 1, edges = TRUE,
-  edge.color = "darkblue", edge.alpha = E(graph)$weight, edge.size = 1,
-  edge.line = "solid", edge.order = FALSE, text = FALSE, text.size = 3,
-  text.color = "black", text.alpha = 1, legend = "side",
-  text.vjust = 1.5, midpoints = FALSE, midpoint.arrow = arrow(angle = 20,
-  length = unit(0.33, "cm"), ends = "last", type = "closed"),
-  edge.text = FALSE, edge.text.size = 3, edge.text.alpha = 0.9)
+  vertex.shape = 21, vertex.size = 3, vertex.alpha = 1,
+  vertex.order = FALSE, edges = TRUE, edge.color = "darkblue",
+  edge.alpha = E(graph)$weight, edge.size = 1, edge.line = "solid",
+  edge.order = FALSE, text = FALSE, text.size = 3, text.color = "black",
+  text.alpha = 1, legend = "side", text.vjust = 1.5, midpoints = FALSE,
+  midpoint.arrow = arrow(angle = 20, length = unit(0.33, "cm"), ends = "last",
+  type = "closed"), edge.text = FALSE, edge.text.size = 3,
+  edge.text.alpha = 0.9)
 }
 \arguments{
 \item{graph}{a \link{igraph} network object}
@@ -28,6 +29,8 @@ graph.plot(graph, layout = layout_with_fr(graph, weight = E(graph)$weight^2,
 \item{vertex.size}{a single value or a vector of the same length and order as the vertices in graph.}
 
 \item{vertex.alpha}{a single value between 0 and 1 or a vector of the same length and order as the vertices in graph.}
+
+\item{vertex.order}{a numeric vector of the same length and order as the vertices in the graph.}
 
 \item{edges}{if TRUE edges are drawn.}
 
@@ -70,7 +73,7 @@ graph.plot - Plots a weighted graph, with weighted edges as a default
 \examples{
 data(den)
 health.affil  <- has.tags(den, c("Health"))
-den.health    <- den[den$AFFILIATION \%in\% health.affil,]
+den.health    <- droplevels(den[den$AFFILIATION \%in\% health.affil,])
 net.org       <- elite.network.org(den.health)
 lay.org       <- layout.fruchterman.reingold(net.org)
 p             <- graph.plot(net.org, layout = lay.org, vertex.size = V(net.org)$members, vertex.fill = degree(net.org),

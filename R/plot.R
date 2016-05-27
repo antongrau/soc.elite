@@ -7,6 +7,7 @@
 #' @param vertex.shape a single value or a vector of the same length and order as the vertices in graph.
 #' @param vertex.size a single value or a vector of the same length and order as the vertices in graph.
 #' @param vertex.alpha a single value between 0 and 1 or a vector of the same length and order as the vertices in graph. 
+#' @param vertex.order a numeric vector of the same length and order as the vertices in the graph. 
 #' @param edges if TRUE edges are drawn.
 #' @param edge.color a single value or a vector of the same length and order as the edges in graph. See \link{colors} for valid single values.
 #' @param edge.alpha a single value between 0 and 1 or a vector of the same length and order as the edges in graph. 
@@ -28,28 +29,32 @@
 #' @examples
 #' data(den)
 #' health.affil  <- has.tags(den, c("Health"))
-#' den.health    <- den[den$AFFILIATION %in% health.affil,]
+#' den.health    <- droplevels(den[den$AFFILIATION %in% health.affil,])
 #' net.org       <- elite.network.org(den.health)
 #' lay.org       <- layout.fruchterman.reingold(net.org)
 #' p             <- graph.plot(net.org, layout = lay.org, vertex.size = V(net.org)$members, vertex.fill = degree(net.org),
 #'                             edge.color = "darkmagenta", edge.alpha = log(1/E(net.org)$weight))
 #' p             <- p + scale_fill_continuous(low = "white", high = "magenta") + scale_size_continuous(range = c(3, 10))
 #' p + scale_alpha_continuous(range = c(0,1))
+
 graph.plot  <- function(graph, layout = layout_with_fr(graph, weight = E(graph)$weight^2, grid = "nogrid"),
-                        vertex.color = "black", vertex.fill = "grey60", vertex.shape = 21, vertex.size = 3, vertex.alpha = 1,
+                        vertex.color = "black", vertex.fill = "grey60", vertex.shape = 21, vertex.size = 3, vertex.alpha = 1, vertex.order = FALSE,
                         edges = TRUE, edge.color = "darkblue", edge.alpha = E(graph)$weight, edge.size = 1, edge.line = "solid", edge.order = FALSE,
                         text = FALSE, text.size = 3, text.color = "black", text.alpha = 1, legend = "side", text.vjust = 1.5, midpoints = FALSE,
                         midpoint.arrow = arrow(angle = 20, length = unit(0.33, "cm"), ends = "last", type = "closed"), edge.text = FALSE, edge.text.size = 3, edge.text.alpha = 0.9){
   
   layout                  <- norm_coords(layout, xmin = 1, xmax = 10^10, ymin = 1, ymax = 10^10)
   vertex.coords           <- as.data.frame(vertex.coord(graph, layout))
-  
   vertex.l                <- list(color=vertex.color, fill=vertex.fill, shape=vertex.shape, size=vertex.size, alpha=vertex.alpha)
   v.i                     <- unlist(lapply(vertex.l, length)) == 1
   vertex.attributes       <- vertex.l[v.i]
-  vertex.aes              <- vertex.l[v.i==FALSE]
+  vertex.aes              <- vertex.l[v.i == FALSE]
   vertex.aes$x            <- vertex.coords$x
   vertex.aes$y            <- vertex.coords$y
+  
+  #if(length(vertex.order) > 1) vertex.aes <- lapply(vertex.aes, function(x, vertex.order) x[order(vertex.order)], vertex.order = vertex.order)
+  if(length(vertex.order) > 1) vertex.aes <- as.list(as.data.frame(vertex.aes)[order(vertex.order),])
+  #if(length(vertex.order) > 1) vertex.aes$order  <- vertex.order
   
   if(identical(edges, TRUE)){
     
@@ -116,7 +121,7 @@ graph.plot  <- function(graph, layout = layout_with_fr(graph, weight = E(graph)$
   }
   
   # Plot edges
-  p <- ggplot()
+   p <- ggplot()
   
   if(identical(edges, TRUE)){
     edge.attributes$mapping        <- do.call("aes", edge.aes)
