@@ -265,9 +265,9 @@ eliteDB.connections <- function(pass = ""){
   # Det ville nok også være sundt med nogle automatiske tests
   # Det ser ud til at ikke alle affiliation ids kan findes i connections 
   pass_string                     <- paste0("&password=", pass)
-  elite.db.connections            <- fromJSON(paste0("http://elitedb.ogtal.dk/exporter.php?type=connections", pass_string))
-  elite.db.persons                <- fromJSON(paste0("http://elitedb.ogtal.dk/exporter.php?type=persons", pass_string))
-  elite.db.affil                  <- fromJSON(paste0("http://elitedb.ogtal.dk/exporter.php?type=affiliations", pass_string))
+  elite.db.connections            <- fromJSON(paste0("http://elitedb.ogtal.dk/exporter.php?type=connections&database=elite", pass_string))
+  elite.db.persons                <- fromJSON(paste0("http://elitedb.ogtal.dk/exporter.php?type=persons&database=elite", pass_string))
+  elite.db.affil                  <- fromJSON(paste0("http://elitedb.ogtal.dk/exporter.php?type=affiliations&database=elite", pass_string))
   
   connections                     <- elite.db.connections[order(elite.db.connections$affiliation_id),]
   persons                         <- elite.db.persons[order(elite.db.persons$id),]
