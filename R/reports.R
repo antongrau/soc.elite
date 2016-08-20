@@ -100,7 +100,7 @@ ego.network      <- function(name, den, n = Inf){
 #' @return a ggplot ego.plot
 #' @export
 
-ego.two.mode.affil <- function(name, den = den, text = "affil", member.of = pe13$Name, ...){
+ego.two.mode.affil <- function(name, den = den, text = "affil", member.of = pe13$Name, text.background = "white", ...){
   
   aff          <- den$AFFILIATION %in% name
   
@@ -129,7 +129,7 @@ ego.two.mode.affil <- function(name, den = den, text = "affil", member.of = pe13
   
   # E(net.two)$weight <- E(net.two)$e.w
   
-  p <- graph.plot.twomode(net.two, layout = layout_with_fr(graph, grid = "nogrid"),  text = text, vertex.fill =  member.of.TF, vertex.size = degree(net.two), edge.color = "black", vertex.shape = type, edge.size = 0.45, ...)
+  p <- graph.plot.twomode(net.two, layout = layout_with_fr(graph, grid = "nogrid"),  text = text, vertex.fill =  member.of.TF, vertex.size = degree(net.two), edge.color = "black", vertex.shape = type, edge.size = 0.45, text.background = text.background, ...)
   p <- p + scale_fill_manual(values = c("white", "black", "black"), guide = "none") + scale_shape_manual(values = c(21, -0x25C9, 23 ), guide = "none") + scale_alpha_continuous(range = c(0.08, 0.4), guide ="none") + scale_size_continuous(range = c(2, 4), guide = "none")
   p + ggtitle(name)
 }

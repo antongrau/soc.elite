@@ -64,11 +64,17 @@ largest.component <- function(graph, cut.off = 1){
 has.tags       <- function(x, tags, res = "affiliations", silent = FALSE){
   
   org.navn     <- as.character(x$AFFILIATION)
-  sector.match <- sapply(tags, grepl, x = x$TAGS)
+  
+  tag.list               <- strsplit(as.character(x$TAGS),  ",")
+  tag.list               <- lapply(tag.list, trimws)
+  find.in.tag.list       <- function(tag.list, tag) unlist(lapply(tag.list, function(x, tag) any(x == tag), tag = tag))
+  sector.match           <- do.call("cbind", lapply(tags, find.in.tag.list, tag.list = tag.list))
+  colnames(sector.match) <- tags
+
   tag.orgs     <- unique(org.navn[which(rowSums(sector.match) >= 1)])
   
   if (identical(silent, FALSE)){
-  how.many.per.tag <- cbind("Matched positions" = colSums(sector.match))
+  how.many.per.tag <- cbind("Matched positions" = colSums(sector.match, na.rm = T))
   print(how.many.per.tag)
   cat("\n", "\n")
   }

@@ -5,7 +5,7 @@
 \title{A report of the first neighborhood of an affiliation}
 \usage{
 ego.two.mode.affil(name, den = den, text = "affil", member.of = pe13$Name,
-  ...)
+  text.background = "white", ...)
 }
 \arguments{
 \item{name}{a single or several affilation names}

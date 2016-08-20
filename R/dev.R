@@ -131,45 +131,101 @@
 # # 
 # # # Vi kan udregne order mere dynamisk tror jeg
 # # # Vi kan også klare det sidste step mere smart.
-# # library(soc.elite)
-# # library(igraph)
-# # data(den)
-# # data(pe13)
-# # graph <- net.elite
-# # graph <- elite.network(den[1:9000,])
-# # R <- 2.1
-# # reach <- function(graph, R = 2.1){
-# # g          <- graph
-# # g          <- delete.edges(g, which(E(g)$weight > 2.1))
-# # order      <- ceiling(R/min(E(g)$weight))
-# # order      <- 2
-# # 
-# # q <- connect(g, order = 2)
-# # ecount(q)
-# # 
-# # sort(degree(q))
-# # 
-# # e <- make_ego_graph(g, nodes = "Jesper Cramon", order = order)[[1]]
-# # E(e)$weight
-# # ec <- connect(e, order = 2)
-# # E(e)$weight
-# # table(is.na(E(ec)$weight))
-# # 
-# # out        <- numeric(vcount(g))
-# # for(i in 1:vcount(g)){
-# # ego.name   <- V(g)$name[i]
-# # ego        <- make_ego_graph(g, order = order, nodes = i)[[1]]
-# # out[i]     <- sum(distances(ego, v = ego.name) <= R)
-# # 
-# # rr <- function(x, g){
-# #   ego.name   <- V(g)$name[x]
-# #   ego        <- make_ego_graph(g, order = order, nodes = x)[[1]]
-# #   sum(distances(ego, v = ego.name) <= R)
-# # }
-# # laply(1:vcount(g), rr, g = g, .progress = "text")
-# # }
-# # out
-# # }
+# library(soc.elite)
+# library(igraph)
+# data(den)
+# data(pe13)
+# graph <- net.elite
+# graph.all <- elite.network(droplevels(den))
+# R <- 2.1
+# reach <- function(graph, R = 2.1){
+# g          <- graph
+# g          <- delete.edges(g, which(E(g)$weight > 2.1))
+# #order      <- ceiling(R/min(E(g)$weight))
+# order      <- R
+# 
+# rr <- function(id, g, order){
+#   e        <- make_ego_graph(graph = g, order = order, nodes = id)[[1]]
+#   name     <- which(V(e)$name %in% V(g)$name[id])
+#   es       <- e[name,]
+#   min.es   <- order - min(es[es > 0])
+#   e        <- delete.edges(e, which(E(e)$weight > min.es))
+#   sum(distances(graph = e, v = name) >= order)
+# }
+# 
+# reach      <- laply(1:vcount(g), rr, g = g, order = order)
+# reach
+# }
+# 
+# a <- system.time(reach(graph))
+# a
+# 
+# b <- system.time(reach(graph.all))
+# b
+# 
+# ?graph.bfs
+# 
+# order         <- 2
+# id            <- 1
+# 
+# 
+# adj           <- cbind(a = c(0, 1.5, 0, 0, 1, 1, 0),
+#                        b = c(1.5, 0, 0.5, 1, 1, 1, 0),
+#                        c = c(0, 0.5, 0, 0, 0, 0, 0),
+#                        d = c(0, 1, 0, 0, 0, 0, 0),
+#                        e = c(1, 1, 0, 0, 0, 0, 1),
+#                        f = c(1, 1, 0, 0, 0, 0, 1),
+#                        g = c(0, 0, 0, 0, 1, 1, 0))
+# rownames(adj) <- colnames(adj)
+# adj <- Matrix(adj)
+# 
+# reach.from.adj <- function(adj, id, order){
+# #adj[adj == 0] <- NA
+# 
+# adj           <- adj[,which(adj[id, ] > 0)]
+# first         <- adj[id,]
+# ar.i          <- which(adj != 0, arr.ind = T) # Det her kan hives ud af en sparse matrice, hvis det logiske udtryk er langsomt
+# for(i in 1:length(first)){
+# ind <- ar.i[ar.i[,2] == i, ]
+# adj[ind[,1], i]  <- adj[ind[,1], i] + first[i]
+# }
+# adj[id,]      <- first
+# 
+# ar            <- which(adj <= order & adj > 0, arr.ind = T) # Det her må være dårligt
+# 
+# first.degree  <- ar[,2][ar[,1] == id]
+# second.degree <- ar[,1][ar[,1] != id]
+# length(unique(c(first.degree, second.degree)))
+# }
+# 
+# 
+# 
+# reach.from.adj(adj, id = 2, order = 2)
+# 
+# # Test med stor data ----
+# hoods            <- neighborhood(graph, order = 2)
+# id <- 1
+# hood <- hoods[[id]]
+# 
+# graph.adj        <- as_adj(graph, attr = "weight")
+# 
+# reach       <- function(graph, id, order){
+# hood             <- ego(graph, nodes = id, order = 2)[[1]]
+# adj              <- graph[as.numeric(hood), as.numeric(hood)]
+# reach.from.adj(adj, id = 1, order = order)
+# }
+# 
+# graph <- graph.all
+# graph <- delete.edges(graph, edges = which(E(graph)$weight >= order))
+# har.reach <- which(neighborhood.size(graph, order = 2) > 1)
+# system.time(sapply(har.reach[1:1000], reach, graph = graph, order = order))
+# 
+# str(hoods)
+# 
+# 
+# g <- graph_from_adjacency_matrix(adj, mode = "undirected", weighted = T)
+# plot(g)
+
 # # 
 # # egos <- ego(graph = g, order = order)
 # # names(egos) <- V(g)$name

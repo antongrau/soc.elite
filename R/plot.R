@@ -38,12 +38,12 @@
 #' p + scale_alpha_continuous(range = c(0,1))
 
 graph.plot  <- function(graph, layout = layout_with_fr(graph, weight = E(graph)$weight^2, grid = "nogrid"),
-                        vertex.color = "black", vertex.fill = "grey60", vertex.shape = 21, vertex.size = 3, vertex.alpha = 1, vertex.order = FALSE,
+                        vertex.color = "black", vertex.fill = "grey60", vertex.shape = 21, vertex.size = 3, vertex.alpha = 1, vertex.order = FALSE, vertex.background = "white",
                         edges = TRUE, edge.color = "darkblue", edge.alpha = E(graph)$weight, edge.size = 1, edge.line = "solid", edge.order = FALSE,
-                        text = FALSE, text.size = 3, text.color = "black", text.alpha = 1, legend = "side", text.vjust = 1.5, midpoints = FALSE,
+                        text = FALSE, text.background = NULL, text.background.alpha = 0.4, text.background.border = 0, text.size = 3, text.color = "black", text.alpha = 1, legend = "side", text.vjust = 1.5, midpoints = FALSE,
                         midpoint.arrow = arrow(angle = 20, length = unit(0.33, "cm"), ends = "last", type = "closed"), edge.text = FALSE, edge.text.size = 3, edge.text.alpha = 0.9){
   
-  layout                  <- norm_coords(layout, xmin = 1, xmax = 10^10, ymin = 1, ymax = 10^10)
+  layout[, 1:2]           <- norm_coords(layout[, 1:2], xmin = 1, xmax = 10^10, ymin = 1, ymax = 10^10)
   vertex.coords           <- as.data.frame(vertex.coord(graph, layout))
   vertex.l                <- list(color=vertex.color, fill=vertex.fill, shape=vertex.shape, size=vertex.size, alpha=vertex.alpha)
   v.i                     <- unlist(lapply(vertex.l, length)) == 1
@@ -141,12 +141,31 @@ graph.plot  <- function(graph, layout = layout_with_fr(graph, weight = E(graph)$
   }
   
   
-  # Plot vertices
+  # Plot vertices ----
   vertex.attributes$mapping     <- do.call("aes", vertex.aes)
+   if(is.null(vertex.background) == FALSE){
+     vertex.background.attributes         <- vertex.attributes
+     vertex.background.attributes$fill    <- vertex.background
+     vertex.background.attributes$alpha   <- 1
+     vertex.background.attributes$color   <- vertex.background
+     p <- p + do.call("geom_point", vertex.background.attributes, quote=TRUE)
+   }
+   
   p <- p + do.call("geom_point", vertex.attributes, quote=TRUE)
   
-  # Plot text
+  # Plot text ----
   if(text==TRUE){
+    if(is.null(text.background) == FALSE){
+      text.background.attributes              <- text.attributes
+      text.background.attributes$mapping      <- do.call("aes", text.aes)
+      text.background.attributes$color        <- NA
+      text.background.attributes$fill         <- text.background
+      text.background.attributes$alpha        <- text.background.alpha 
+      text.background.attributes$label.size   <- text.background.border
+      text.background.attributes$vjust        <- text.vjust - 0.5
+      
+      p <- p + do.call("geom_label", text.background.attributes, quote=TRUE)  
+    }
     text.attributes$mapping     <- do.call("aes", text.aes)
     p <- p + do.call("geom_text", text.attributes, quote=TRUE)
   }

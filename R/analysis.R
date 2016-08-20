@@ -165,7 +165,7 @@ elite.network.org     <- function(den = den, sigma = 14){
   V(net.org)$weighted.members <- diag(adj.org)
   
   over                   <- E(net.org)$weight > 1
-  #E(net.org)$weight[over] <- log(E(net.org)$weight[over]) + 1
+  E(net.org)$weight[over] <- log(E(net.org)$weight[over]) + 1
   E(net.org)$weight      <- 1/E(net.org)$weight
   net.org
 }
