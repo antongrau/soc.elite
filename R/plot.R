@@ -302,35 +302,17 @@ line.plot <- function(x, sort = TRUE, var.names = colnames(x), label.x = NULL, l
 edge.coord <- function(graph, layout){
   
   graph.names       <- V(graph)$name
-  el                <- data.frame(get.edgelist(graph))
+  el                <- data.frame(get.edgelist(graph, names = FALSE))
+  colnames(el)      <- c("ego", "alter")
   
   if(is.weighted(graph) == FALSE) E(graph)$weight <- rep(1, ecount(graph))
   
-  el.X1.levels.x    <- levels(el$X1)
-  el.X1.levels.y    <- levels(el$X1)
-  el.X2.levels.x    <- levels(el$X2)
-  el.X2.levels.y    <- levels(el$X2)
-  
-  for (i in 1:length(graph.names)){
-    navn             <- graph.names[i]
-    navn.el.pos.1    <- which(el.X1.levels.x == navn)
-    navn.el.pos.2    <- which(el.X2.levels.x == navn)
-    el.X1.levels.x[navn.el.pos.1]      <- layout[i, 1] 
-    el.X1.levels.y[navn.el.pos.1]      <- layout[i, 2] 
-    el.X2.levels.x[navn.el.pos.2]      <- layout[i, 1] 
-    el.X2.levels.y[navn.el.pos.2]      <- layout[i, 2] 
-  }
-  
-  out                   <- data.frame(start.x = el$X1, start.y = el$X1, slut.x = el$X2, slut.y = el$X2, weight = E(graph)$weight)
-  levels(out$start.x)   <- el.X1.levels.x
-  levels(out$start.y)   <- el.X1.levels.y
-  levels(out$slut.x)    <- el.X2.levels.x
-  levels(out$slut.y)    <- el.X2.levels.y
-  
-  out                   <- apply(out, 2, as.character)
-  out                   <- apply(out, 2, as.numeric)
-  
-  as.data.frame(out)
+  out                   <- data.frame(start.x = layout[el$ego, 1],
+                                      start.y = layout[el$ego, 2],
+                                      slut.x  = layout[el$alter, 1],
+                                      slut.y  = layout[el$alter, 2],
+                                      weight  = E(graph)$weight)
+  out
 }
 
 
